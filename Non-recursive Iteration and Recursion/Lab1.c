@@ -33,25 +33,30 @@ int main(void){
     puts("5. Power");
 
     puts("");
-    puts("Please select the number index of your operation e.g 1. \nEnter -1 to quit");
-    printf("%s","Input:");
+    puts("Please select the number index of your operation e.g 1 \nEnter -1 to quit");
+    printf("%s","Input: ");
     scanf("%d", &selection);
 
   
     switch(selection){
       case 1:
+        summation();
       break;
       
       case 2:
+        factorial();
       break;
       
       case 3:
+        fibonacci();
       break;
       
       case 4:
+        gcd();
       break;
       
       case 5:
+        power();
       break;
                 
       default:
