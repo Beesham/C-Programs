@@ -10,7 +10,7 @@
 #include <stdlib.h>
 
 //Function prototypes
-void summation();
+int summation(int);
 void factorial();
 void fibonacci();
 void gcd();
@@ -23,6 +23,7 @@ int main(void){
     
   while(selection != EOF){ 
     
+    puts("");
     puts("*************");
     puts("*   Menu    *");
     puts("*************");
@@ -39,8 +40,22 @@ int main(void){
 
   
     switch(selection){
-      case 1:
-        summation();
+      case 1:{
+        int input; //variable that holds user input
+        int results; // variable that holds the result of the operation
+  
+        printf("%s", "Please enter a positive integer: ");
+        scanf("%d", &input);
+              
+        if(input >= 1){
+          int results = summation(input);
+          printf("%s %d %s %d", "Summation of ", input, " is: ", results);
+          getchar();  //waits for user to hit Enter to continue
+        }else{
+          puts("Invalid input!");
+          getchar();  //waits for user to hit Enter to continue
+        }
+      }
       break;
       
       case 2:
@@ -63,18 +78,23 @@ int main(void){
           puts("ERROR: selection must be from the menu shown");
     }
         
-    getchar();  //Clears the input buffer
+    getchar();  //waits for user to hit Enter to continue
   }
   
 }
 
 /*
-  Objective:
-  Input:
-  Output:
+  summation: adds each number sequence of a given positive integer up to itself e.g 4: 1 + 2 + 3 + 4 = 10
+            and prints the result
+  Input: a positive integer (n)
+  Output: results
 */
-void summation(){
-
+int summation(int n){
+  int results = 0;
+  for(int i = 1; i <= n; ++i){
+    results += i;
+  }
+  return results;
 }
 
 /*
