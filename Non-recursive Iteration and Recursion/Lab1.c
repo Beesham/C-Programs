@@ -11,7 +11,7 @@
 
 //Function prototypes
 int summation(int);
-void factorial();
+int factorial(int);
 void fibonacci();
 void gcd();
 void power();
@@ -20,6 +20,8 @@ void power();
 int main(void){
   
   int selection;
+  int input; //variable that holds user input
+  int results; // variable that holds the result of the operation
     
   while(selection != EOF){ 
     
@@ -40,10 +42,7 @@ int main(void){
 
   
     switch(selection){
-      case 1:{
-        int input; //variable that holds user input
-        int results; // variable that holds the result of the operation
-  
+      case 1:{ 
         printf("%s", "Please enter a positive integer: ");
         scanf("%d", &input);
               
@@ -58,8 +57,19 @@ int main(void){
       }
       break;
       
-      case 2:
-        factorial();
+      case 2:{ 
+        printf("%s", "Please enter a positive integer: ");
+        scanf("%d", &input);
+              
+        if(input >= 0){
+          int results = factorial(input);
+          printf("%s %d %s %d", "Factorial of ", input, " is: ", results);
+          getchar();  //waits for user to hit Enter to continue
+        }else{
+          puts("Invalid input!");
+          getchar();  //waits for user to hit Enter to continue
+        }
+      }
       break;
       
       case 3:
@@ -98,12 +108,19 @@ int summation(int n){
 }
 
 /*
-  Objective:
-  Input:
-  Output:
+  factorial: multiplies each number sequence of a given positive integer down to 1 e.g 4: 4 * 3 * 2 * 1 = 24
+  Input: a positive integer (n)
+  Output: results
 */
-void factorial(){
+int factorial(int n){
+  int results = 1;
   
+  if(n == 0) return 0;
+  
+  for(int i = n; i > 1; i--){
+    results *= i;
+  }
+  return results;
 }
 
 /*
