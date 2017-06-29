@@ -7,6 +7,7 @@
 		 the user.
 */
 #include <stdio.h>
+#include <stdlib.h>
 
 //Function prototypes
 void summation();
@@ -17,11 +18,49 @@ void power();
 
 
 int main(void){
+	
+	int selection;
+    
+	while(selection != EOF){ 
+    
+        puts("*************");
+        puts("*   Menu    *");
+        puts("*************");
+        puts("1. Summation");
+        puts("2. Factorial");
+        puts("3. Fibonacci");
+        puts("4. GCD");
+        puts("5. Power");
 
-    puts("\tMenu");
-    puts("\t----");
+        puts("");
+        puts("Please select the number index of your operation e.g 1. \nEnter -1 to quit");
+        printf("%s","Input:");
+        scanf("%d", &selection);
 
-
+	
+        switch(selection){
+            case 1:
+            break;
+            
+            case 2:
+            break;
+            
+            case 3:
+            break;
+            
+            case 4:
+            break;
+            
+            case 5:
+            break;
+                    
+            default:
+                puts("ERROR: selection must be from the menu shown");
+        }
+        
+        getchar();  //Clears the input buffer
+	}
+	
 }
 
 /*
