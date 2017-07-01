@@ -2,7 +2,7 @@
   Author: Beesham Sarendranauth, 104854956
   Date: 2017/07/03
   Description: performs non-recursive operations such as factorials
-   and fibonnacci sequence.
+   and fibonacci sequence.
    The operations are selected from a menu presented to
    the user.
 */
@@ -11,11 +11,11 @@
 
 //Function prototypes
 int prompt();
-int summation(int);
-int factorial(int);
-int fibonacci(int);
-int gcd(int, int);
-unsigned long long int power(int, int);
+unsigned long long int summation(unsigned int);
+unsigned long long int factorial(unsigned int);
+unsigned long long int fibonacci(unsigned int);
+int gcd(unsigned int, unsigned int);
+unsigned long long int power(unsigned int, unsigned int);
 
 
 int main(void){
@@ -23,10 +23,10 @@ int main(void){
   int selection;
   int input; //variable that holds user input
   int input2; //variable that holds user input
-  int results; // variable that holds the result of the operation
     
   while(selection != EOF){ 
     
+    //displays a menu
     puts("");
     puts("*************");
     puts("*   Menu    *");
@@ -42,14 +42,13 @@ int main(void){
     printf("%s","Input: ");
     scanf("%d", &selection);
 
-  
+    //switch statement to select appropriate operation
     switch(selection){
       case 1:{ 
         input = prompt();
-              
+        
         if(input >= 1){
-          int results = summation(input);
-          printf("%s %d %s %d", "Summation of ", input, " is: ", results);
+          printf("%s %d %s %llu", "Summation of ", input, " is: ", summation(input));
           getchar();  //waits for user to hit Enter to continue
         }
         else{
@@ -61,9 +60,9 @@ int main(void){
       
       case 2:{ 
         input = prompt();
+        
         if(input >= 0){
-          int results = factorial(input);
-          printf("%s %d %s %d", "Factorial of ", input, " is: ", results);
+          printf("%s %d %s %llu", "Factorial of ", input, " is: ", factorial(input));
           getchar();  //waits for user to hit Enter to continue
         }else{
           puts("Invalid input!");
@@ -74,9 +73,9 @@ int main(void){
       
       case 3:{ 
         input = prompt();
+        
         if(input >= 0){
-          int results = fibonacci(input);
-          printf("%s %d %s %d", "Fibonacci of ", input, " is: ", results);
+          printf("%s %d %s %llu", "Fibonacci of ", input, " is: ", fibonacci(input));
           getchar();  //waits for user to hit Enter to continue
         }
         else{
@@ -91,8 +90,7 @@ int main(void){
         input2 = prompt();
         
         if(input >= 0 && input2 >= 0){
-          int results = gcd(input, input2);
-          printf("%s%d %d %s%d", "GCD of ", input, input2, "is: ", results);
+          printf("%s%d %d %s%d", "GCD of ", input, input2, "is: ", gcd(input, input2));
           getchar();  //waits for user to hit Enter to continue
         }
         else{
@@ -107,8 +105,7 @@ int main(void){
         input2 = prompt();
         
         if(input > 0 && input2 >= 0){
-          unsigned long long int results = power(input, input2);
-          printf("%s%d %d %s%llu", "Power of ", input, input2, "is: ", results);
+          printf("%s%d %d %s%llu", "Power of ", input, input2, "is: ", power(input, input2));
           getchar();  //waits for user to hit Enter to continue
         }
         else{
@@ -145,7 +142,7 @@ int prompt(){
   Input: a positive integer (n)
   Output: results
 */
-int summation(int n){
+unsigned long long int summation(unsigned int n){
   int results = 0;
   for(unsigned int i = 1; i <= n; ++i){
     results += i;
@@ -158,7 +155,7 @@ int summation(int n){
   Input: a positive integer (n)
   Output: results
 */
-int factorial(int n){
+unsigned long long int factorial(unsigned int n){
   int results = 1;
   
   if(n == 0) return 0;
@@ -175,7 +172,7 @@ int factorial(int n){
   Input: a positive integer (n) where n is the number of sequences
   Output: results
 */
-int fibonacci(int n){
+unsigned long long int fibonacci(unsigned int n){
   int results = 1;  //we initialize results to 1 because our seq. starts at 1
   
   int prev = 1, pprev = 1;  //var prev is the previous num in the sequence and is seeded with 1
@@ -200,7 +197,7 @@ int fibonacci(int n){
   Input: 2 positive integers: x, y
   Output: result (the gcd of the 2 integers)
 */
-int gcd(int x, int y){
+int gcd(unsigned int x, unsigned int y){
     int results = 1;  //results is init. to 1 because all numbers have 1 as a divisor except 0
     int max;  //the max num of the 2 integers
     
@@ -224,7 +221,7 @@ int gcd(int x, int y){
   Input: 2 integers; a,b where a is powered by b
   Output: results (the power of a by b)
 */
-unsigned long long int power(int a, int b){
+unsigned long long int power(unsigned int a, unsigned int b){
     unsigned long long int results = 1; //results init. to 1 because 1^n is still 1
     
     //determines the results of a^b by iteration
