@@ -38,7 +38,7 @@ int main(void){
     puts("5. Power");
 
     puts("");
-    puts("Please select the number index of your operation e.g 1 \nEnter -1 to quit");
+    puts("Please select the number index of your operation e.g 1 \nEnter -1 to quit (ERROR prints upon exit)");
     printf("%s","Input: ");
     scanf("%d", &selection);
 
