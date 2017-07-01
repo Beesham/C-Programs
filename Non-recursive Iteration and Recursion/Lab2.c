@@ -202,17 +202,15 @@ int gcd(unsigned int x, unsigned int y){
 }
 
 /*
-  power: calcualtes the power of a given integer but a given integer
+  power: calculates the power of a given integer but a given integer
   Input: 2 integers; a,b where a is powered by b
   Output: results (the power of a by b)
 */
 unsigned long long int power(unsigned int a, unsigned int b){
-    unsigned long long int results = 1; //results init. to 1 because 1^n is still 1
+    int results = 1; //results init. to 1 because 1^n is still 1
     
-    //determines the results of a^b by iteration
-    for(unsigned int i = 0; i < b; i++){
-        results *= a;
-    }
+    if(b == 0) return 1; //base case
+    results = power(a, b - 1) * a; //recursive call
     
     return results;
 }
