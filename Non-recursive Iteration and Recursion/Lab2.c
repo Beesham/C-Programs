@@ -194,19 +194,9 @@ unsigned long long int fibonacci(unsigned int n){
 */
 int gcd(unsigned int x, unsigned int y){
     int results = 1;  //results is init. to 1 because all numbers have 1 as a divisor except 0
-    int max;  //the max num of the 2 integers
     
     if(y == 0) return x;  //base case
-    
-    max = x > y ? x : y;  //calculates the max of the 2 integers
-    
-    //determines the GCD of the 2 integers by looping through the count of the max 
-    for(unsigned int i = 1; i <= max; i++){
-        //if the x or y MOD i == 0, then the GCD is the count. ie. i
-        if((x % i == 0) && (y % i == 0)){
-            results = i;
-        }
-    }
+    results = gcd(y, x % y);  //recursive call
    
     return results;
 }
