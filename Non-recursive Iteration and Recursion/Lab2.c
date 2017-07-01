@@ -160,7 +160,7 @@ unsigned long long int summation(unsigned int n){
   Output: results
 */
 unsigned long long int factorial(unsigned int n){
-  int results = 1;
+  unsigned long long int results = 1;
   
   //base case
   if(n == 0) return 1;
@@ -175,7 +175,7 @@ unsigned long long int factorial(unsigned int n){
   Output: results
 */
 unsigned long long int fibonacci(unsigned int n){
-  int results = 1;  //we initialize results to 1 because our seq. starts at 1
+  unsigned long long int results = 1;  //we initialize results to 1 because our seq. starts at 1
     
   //tests base cases as the fib. seq. of 0 is 0 and 1 is 1
   if(n == 0 || n == 1){

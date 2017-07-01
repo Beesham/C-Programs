@@ -156,7 +156,7 @@ unsigned long long int summation(unsigned int n){
   Output: results
 */
 unsigned long long int factorial(unsigned int n){
-  int results = 1;
+  unsigned long long int results = 1;
   
   if(n == 0) return 1;
   
@@ -173,7 +173,7 @@ unsigned long long int factorial(unsigned int n){
   Output: results
 */
 unsigned long long int fibonacci(unsigned int n){
-  int results = 1;  //we initialize results to 1 because our seq. starts at 1
+  unsigned long long int results = 1;  //we initialize results to 1 because our seq. starts at 1
   
   int prev = 1, pprev = 1;  //var prev is the previous num in the sequence and is seeded with 1
                             //var pprev is the 2nd previous num in the sequence and is seeded with 1
