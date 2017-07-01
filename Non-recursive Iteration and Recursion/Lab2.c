@@ -182,17 +182,14 @@ unsigned long long int fibonacci(unsigned int n){
   int prev = 1, pprev = 1;  //var prev is the previous num in the sequence and is seeded with 1
                             //var pprev is the 2nd previous num in the sequence and is seeded with 1
   
-  if(n == 0 || n == 1) return n;  //tests base cases as the fib. seq. of 0 is 0 and 1 is 1
-  
-  //Iteratively calculates the fib. seq. of the input number
-  for (int i = 1; i <= n; i++){
-    //we already know the first 2 position results of the seq. is 1 and 1, so we just need to calc. from the 3rd position
-    if(i >= 3){
-        results = (prev) + (pprev);
-        pprev = prev;
-        prev = results;
-    }
+  //tests base cases as the fib. seq. of 0 is 0 and 1 is 1
+  if(n == 0 || n == 1){
+      return n;
+  } 
+  else{
+      results = fibonacci(n - 1) + fibonacci(n - 2);  //recursive call
   }
+  
   return results;
 }
 
