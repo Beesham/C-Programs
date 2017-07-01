@@ -158,7 +158,7 @@ unsigned long long int summation(unsigned int n){
 unsigned long long int factorial(unsigned int n){
   int results = 1;
   
-  if(n == 0) return 0;
+  if(n == 0) return 1;
   
   for(unsigned int i = n; i > 1; i--){
     results *= i;

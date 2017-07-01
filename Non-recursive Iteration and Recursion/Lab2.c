@@ -162,11 +162,9 @@ unsigned long long int summation(unsigned int n){
 unsigned long long int factorial(unsigned int n){
   int results = 1;
   
-  if(n == 0) return 0;
-  
-  for(unsigned int i = n; i > 1; i--){
-    results *= i;
-  }
+  //base case
+  if(n == 0) return 1;
+  results = n * factorial(n - 1); //recursive call
   return results;
 }
 
@@ -178,10 +176,7 @@ unsigned long long int factorial(unsigned int n){
 */
 unsigned long long int fibonacci(unsigned int n){
   int results = 1;  //we initialize results to 1 because our seq. starts at 1
-  
-  int prev = 1, pprev = 1;  //var prev is the previous num in the sequence and is seeded with 1
-                            //var pprev is the 2nd previous num in the sequence and is seeded with 1
-  
+    
   //tests base cases as the fib. seq. of 0 is 0 and 1 is 1
   if(n == 0 || n == 1){
       return n;
@@ -189,7 +184,6 @@ unsigned long long int fibonacci(unsigned int n){
   else{
       results = fibonacci(n - 1) + fibonacci(n - 2);  //recursive call
   }
-  
   return results;
 }
 
