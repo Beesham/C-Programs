@@ -10,9 +10,10 @@
 #include <stdlib.h>
 
 //Function prototypes
+int prompt();
 int summation(int);
 int factorial(int);
-void fibonacci();
+int fibonacci(int);
 void gcd();
 void power();
 
@@ -43,14 +44,14 @@ int main(void){
   
     switch(selection){
       case 1:{ 
-        printf("%s", "Please enter a positive integer: ");
-        scanf("%d", &input);
+        input = prompt();
               
         if(input >= 1){
           int results = summation(input);
           printf("%s %d %s %d", "Summation of ", input, " is: ", results);
           getchar();  //waits for user to hit Enter to continue
-        }else{
+        }
+        else{
           puts("Invalid input!");
           getchar();  //waits for user to hit Enter to continue
         }
@@ -58,9 +59,7 @@ int main(void){
       break;
       
       case 2:{ 
-        printf("%s", "Please enter a positive integer: ");
-        scanf("%d", &input);
-              
+        input = prompt();
         if(input >= 0){
           int results = factorial(input);
           printf("%s %d %s %d", "Factorial of ", input, " is: ", results);
@@ -72,8 +71,18 @@ int main(void){
       }
       break;
       
-      case 3:
-        fibonacci();
+      case 3:{ 
+        input = prompt();
+        if(input >= 0){
+          int results = fibonacci(input);
+          printf("%s %d %s %d", "Fibonacci of ", input, " is: ", results);
+          getchar();  //waits for user to hit Enter to continue
+        }
+        else{
+          puts("Invalid input!");
+          getchar();  //waits for user to hit Enter to continue
+        }
+      }
       break;
       
       case 4:
@@ -94,6 +103,18 @@ int main(void){
 }
 
 /*
+  prompt: displays a message to the user asking for input
+  Input:
+  Output: the users input
+*/
+int prompt(){
+    int input;
+    printf("%s", "Please enter a positive integer: ");
+    scanf("%d", &input);
+    return input;
+}
+
+/*
   summation: adds each number sequence of a given positive integer up to itself e.g 4: 1 + 2 + 3 + 4 = 10
             and prints the result
   Input: a positive integer (n)
@@ -101,7 +122,7 @@ int main(void){
 */
 int summation(int n){
   int results = 0;
-  for(int i = 1; i <= n; ++i){
+  for(unsigned int i = 1; i <= n; ++i){
     results += i;
   }
   return results;
@@ -117,19 +138,36 @@ int factorial(int n){
   
   if(n == 0) return 0;
   
-  for(int i = n; i > 1; i--){
+  for(unsigned int i = n; i > 1; i--){
     results *= i;
   }
   return results;
 }
 
 /*
-  Objective:
-  Input:
-  Output:
+  fibonacci: generates the fibonacci sequence for a positive integer ege 4: fibonacci(10) = 55
+             starting sequence number is chosen to be 1.
+  Input: a positive integer (n) where n is the number of sequences
+  Output: results
 */
-void fibonacci(){
+int fibonacci(int n){
+  int results = 1;  //we initialize results to 1 because our seq. starts at 1
   
+  int prev = 1, pprev = 1;  //var prev is the previous num in the sequence and is seeded with 1
+                            //var pprev is the 2nd previous num in the sequence and is seeded with 1
+  
+  if(n == 0 || n == 1) return n;  //tests base cases as the fib. seq. of 0 is 0 and 1 is 1
+  
+  //Iteratively calculates the fib. seq. of the input number
+  for (int i = 1; i <= n; i++){
+    //we already know the first 2 position results of the seq. is 1 and 1, so we just need to calc. from the 3rd position
+    if(i >= 3){
+        results = (prev) + (pprev);
+        pprev = prev;
+        prev = results;
+    }
+  }
+  return results;
 }
 
 /*
