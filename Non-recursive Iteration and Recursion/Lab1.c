@@ -15,7 +15,7 @@ int summation(int);
 int factorial(int);
 int fibonacci(int);
 int gcd(int, int);
-void power();
+unsigned long long int power(int, int);
 
 
 int main(void){
@@ -102,8 +102,20 @@ int main(void){
       }
       break;
       
-      case 5:
-        power();
+      case 5:{ 
+        input = prompt();
+        input2 = prompt();
+        
+        if(input > 0 && input2 >= 0){
+          unsigned long long int results = power(input, input2);
+          printf("%s%d %d %s%llu", "Power of ", input, input2, "is: ", results);
+          getchar();  //waits for user to hit Enter to continue
+        }
+        else{
+          puts("Invalid input!");
+          getchar();  //waits for user to hit Enter to continue
+        }
+      }
       break;
                 
       default:
@@ -196,7 +208,7 @@ int gcd(int x, int y){
     
     max = x > y ? x : y;  //calculates the max of the 2 integers
     
-    //determinces the GCD of the 2 integers by looping through the count of the max 
+    //determines the GCD of the 2 integers by looping through the count of the max 
     for(unsigned int i = 1; i <= max; i++){
         //if the x or y MOD i == 0, then the GCD is the count. ie. i
         if((x % i == 0) && (y % i == 0)){
@@ -208,10 +220,17 @@ int gcd(int x, int y){
 }
 
 /*
-  Objective:
-  Input:
-  Output:
+  power: calcualtes the power of a given integer but a given integer
+  Input: 2 integers; a,b where a is powered by b
+  Output: results (the power of a by b)
 */
-void power(){
-
+unsigned long long int power(int a, int b){
+    unsigned long long int results = 1; //results init. to 1 because 1^n is still 1
+    
+    //determines the results of a^b by iteration
+    for(unsigned int i = 0; i < b; i++){
+        results *= a;
+    }
+    
+    return results;
 }
