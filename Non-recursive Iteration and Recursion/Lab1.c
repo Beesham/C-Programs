@@ -14,7 +14,7 @@ int prompt();
 int summation(int);
 int factorial(int);
 int fibonacci(int);
-void gcd();
+int gcd(int, int);
 void power();
 
 
@@ -22,6 +22,7 @@ int main(void){
   
   int selection;
   int input; //variable that holds user input
+  int input2; //variable that holds user input
   int results; // variable that holds the result of the operation
     
   while(selection != EOF){ 
@@ -85,8 +86,20 @@ int main(void){
       }
       break;
       
-      case 4:
-        gcd();
+      case 4:{ 
+        input = prompt();
+        input2 = prompt();
+        
+        if(input >= 0 && input2 >= 0){
+          int results = gcd(input, input2);
+          printf("%s%d %d %s%d", "GCD of ", input, input2, "is: ", results);
+          getchar();  //waits for user to hit Enter to continue
+        }
+        else{
+          puts("Invalid input!");
+          getchar();  //waits for user to hit Enter to continue
+        }
+      }
       break;
       
       case 5:
@@ -145,7 +158,7 @@ int factorial(int n){
 }
 
 /*
-  fibonacci: generates the fibonacci sequence for a positive integer ege 4: fibonacci(10) = 55
+  fibonacci: generates the fibonacci sequence for a positive integer e.g 4: fibonacci(10) = 55
              starting sequence number is chosen to be 1.
   Input: a positive integer (n) where n is the number of sequences
   Output: results
@@ -171,12 +184,27 @@ int fibonacci(int n){
 }
 
 /*
-  Objective:
-  Input:
-  Output:
+  gcd: calculates the greatest common divisor of 2 given positive integer
+  Input: 2 positive integers: x, y
+  Output: result (the gcd of the 2 integers)
 */
-void gcd(){
-  
+int gcd(int x, int y){
+    int results = 1;  //results is init. to 1 because all numbers have 1 as a divisor except 0
+    int max;  //the max num of the 2 integers
+    
+    if(y == 0) return x;  //base case
+    
+    max = x > y ? x : y;  //calculates the max of the 2 integers
+    
+    //determinces the GCD of the 2 integers by looping through the count of the max 
+    for(unsigned int i = 1; i <= max; i++){
+        //if the x or y MOD i == 0, then the GCD is the count. ie. i
+        if((x % i == 0) && (y % i == 0)){
+            results = i;
+        }
+    }
+   
+    return results;
 }
 
 /*
