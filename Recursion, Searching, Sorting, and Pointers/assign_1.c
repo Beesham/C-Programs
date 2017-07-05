@@ -4,6 +4,9 @@
 	Description: This program demonstrated the sorting of a matrix of integers
 */
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
 #define COL 20
 #define ROW 20
 #define DONE 1
@@ -13,23 +16,33 @@ int sortMatrix (unsigned int rowsize, unsigned int colsize, int A[rowsize][colsi
 int searchMatrix (int V, int *P, unsigned int rowsize, unsigned int colsize, int A[rowsize][colsize]);
 
 int main(void){
-    int array[2][6]={{4,8,6,9,4}, {8,6,2,5,4,7}};
     
-    for(int i = 0; i < 2; i++){
-        for(int j = 0; j < 6; j++){
-            printf("%2d", array[i][j]);
-	} 
-        puts("");
+    srand(time(NULL));
+    
+    int array[ROW][COL] = {0};    //init array to 0
+    
+    //gens a random num for each element in the array
+    for (int i = 0; i < ROW; i++){
+        for (int j = 0; j < COL; j++){
+            array[i][j] = rand() % 101; //assigns a random positive int from 0 - 100 to a position in the array
+        }
     }
     
-    int sortedArr = sortMatrix(2, 6, array);
+    for(int i = 0; i < ROW; i++){
+        for(int j = 0; j < COL; j++){
+            if (j % 10 == 0) puts("");
+            printf(" %3d ", array[i][j]);
+        } 
+    }
+    
+    int sortedArr = sortMatrix(ROW, COL, array);
     puts("");
     
-    for(int i = 0; i < 2; i++){
-        for(int j = 0; j < 6; j++){
-            printf("%2d", array[i][j]);
+    for(int i = 0; i < ROW; i++){
+        for(int j = 0; j < COL; j++){
+            if (j % 10 == 0) puts("");
+            printf(" %3d ", array[i][j]);
         } 
-        puts("");
     }
 }
 
@@ -60,8 +73,7 @@ int sortMatrix (unsigned int rowsize, unsigned int colsize, int A[][colsize]){
         }
     }
     
-    
-    return 0;
+    return DONE;
 }
 
 /*
