@@ -17,8 +17,8 @@ int main(void){
     
     for(int i = 0; i < 2; i++){
         for(int j = 0; j < 6; j++){
-            printf("%2i", array[i][j]);
-        } 
+            printf("%2d", array[i][j]);
+	} 
         puts("");
     }
     
@@ -27,7 +27,7 @@ int main(void){
     
     for(int i = 0; i < 2; i++){
         for(int j = 0; j < 6; j++){
-            printf("%2i", array[i][j]);
+            printf("%2d", array[i][j]);
         } 
         puts("");
     }
@@ -48,18 +48,13 @@ int sortMatrix (unsigned int rowsize, unsigned int colsize, int A[][colsize]){
         for(unsigned int i = 0; i < rowsize; i++){
             for(unsigned int j = 0; j < colsize; j++){
                 int hold = A[i][j];
+
                 //checks if current num is less than next, if so then swap
-                if(A[i][j] > A[i][j+1]){
-                    
-                    printf("before swap: %2i\n", A[i][j]);
-                    
+                if(A[i][j] < A[i][j+1]){
                     hold = A[i][j];
                     A[i][j] = A[i][j+1];
                     A[i][j+1] = hold;
                     swap = 0;
-                    
-                    printf("after swap: %2i\n", A[i][j]);
-
                 }
             }
         }
