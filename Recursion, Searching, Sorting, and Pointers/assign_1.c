@@ -7,10 +7,12 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define COL 3
-#define ROW 3
+#define COL 20
+#define ROW 20
 #define SIZE COL * ROW
 #define DONE 1
+#define FOUND 1
+#define NOTFOUND -1
 
 //function prototypes
 int sortMatrix (unsigned int rowsize, unsigned int colsize, int A[rowsize][colsize]);
@@ -20,13 +22,13 @@ int main(void){
     
     srand(time(NULL));
     
-    int array[ROW][COL] = {{2,3,4},{5,6,7},{8,9, 10}};    //init array to 0
-    int searchedNumPosition[2] = {0, SIZE - 1};
+    int array[ROW][COL] = {0};    //init array to 0
+    int searchedNumPosition[2] = {SIZE - 1, 0}; //the position of the number searched will be stored here
     
     //gens a random num for each element in the array
     for (int i = 0; i < ROW; i++){
         for (int j = 0; j < COL; j++){
-            //array[i][j] = rand() % 101; //assigns a random positive int from 0 - 100 to a position in the array 
+            array[i][j] = rand() % 101; //assigns a random positive int from 0 - 100 to a position in the array 
                                         //(0 + (rand() % (100 + 1 - 0)) is the formula used to get 101
         }
     }
@@ -38,11 +40,11 @@ int main(void){
         } 
     }
     
-    //int sortedArr = sortMatrix(ROW, COL, array);
+    int sortedArr = sortMatrix(ROW, COL, array);
     puts("");
     
-    int isFound = searchMatrix(9, searchedNumPosition, ROW, COL, array);
-    printf("\nisFOund: %d\n", isFound);
+    int isFound = searchMatrix(1, searchedNumPosition, ROW, COL, array);
+    printf("\nisFOund: %d at P{%d, %d}\n", isFound, searchedNumPosition[0]/2, searchedNumPosition[1]/2);
 
     
     for (int i = 0; i < ROW; i++){
@@ -84,7 +86,7 @@ int sortMatrix (unsigned int rowsize, unsigned int colsize, int A[][colsize]){
 }
 
 /*
-    searchMatrix: searches a sorted matrix for a given value using recursive binary search.
+    searchMatrix: searches a sorted matrix for a given value using recursive binary search
                   it also computes the position of the value in the matrix
     input: the value to be searched (V)
            the size of the matrix (rowsize, colsize)
@@ -93,15 +95,17 @@ int sortMatrix (unsigned int rowsize, unsigned int colsize, int A[][colsize]){
     output: 1 if the value is found, otherwise -1
 */
 int searchMatrix (int V, int *P, unsigned int rowsize, unsigned int colsize, int A[][colsize]){
-    int foundNum = -1;
-    int minOffset = *P;
-    int maxOffset = *(P + 1);
-    int middleOffset = (maxOffset + minOffset) / 2;
     
-    int *ptr = &A[0][0];
+    int isFound = NOTFOUND;
+    int minOffset = *P; //offset for the location of min num in A, the 0th element of arr P
+    int maxOffset = *(P + 1);   //offset for the location of max num in A, the 1st element of array P
+    int middleOffset = (maxOffset + minOffset) / 2; //offset for the location of middle num in A
+    
+    int *ptr = &A[0][0];    //points to the beginning of the matrix (A)
     
     printf("\nminOff: %d maxOff: %d midOff: %d\n", minOffset, maxOffset, middleOffset);
         
+    //computes the actual value for the min, max, and middle
     int minValue = *(ptr + minOffset);
     int maxValue = *(ptr + maxOffset);
     int middleValue = *(ptr + middleOffset);
@@ -110,23 +114,22 @@ int searchMatrix (int V, int *P, unsigned int rowsize, unsigned int colsize, int
 
     //base case
     if (V == middleValue) return 1;
-    if (V > middleValue){
+    
+    //if num is not found
+    if (((middleValue == minValue) && (middleValue == maxValue) && V != middleValue)) return -1;
+    
+    if (V > middleValue){   //if num is greater than the middle val of the array, search the upper half
         *P = middleOffset;
-        searchMatrix(V, P, rowsize, colsize, A);
+        //no need to re-assign the 1st element of arr P as it still is the max
+        isFound = searchMatrix(V, P, rowsize, colsize, A);
     }
-    else if (V < middleValue){
+    else if (V < middleValue){      //if num is lesser than the middle val of the array, search the lower half
         *P = minOffset;
         *(P + 1) = middleOffset;
-        searchMatrix(V, P, rowsize, colsize, A);
-    }
-    /*
-    else if (V > A[rowsize/2][colsize/2]){
-        searchMatrix(V, P, rowsize/2, colsize/2, A);
-    }
-    */
-        
+        isFound = searchMatrix(V, P, rowsize, colsize, A);
+    }     
     
-    return foundNum;
+    return isFound;
 }
 
 
