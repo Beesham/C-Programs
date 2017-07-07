@@ -7,8 +7,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define COL 20
-#define ROW 20
+#define COL 5
+#define ROW 5
 #define SIZE COL * ROW
 #define DONE 1
 #define FOUND 1
@@ -42,17 +42,16 @@ int main(void){
     
     int sortedArr = sortMatrix(ROW, COL, array);
     puts("");
-    
-    //int isFound = searchMatrix(1, searchedNumPosition, ROW, COL, array);
-    //printf("\nisFOund: %d at P{%d, %d}\n", isFound, searchedNumPosition[0]/2, searchedNumPosition[1]/2);
-
-    
+       
     for (int i = 0; i < ROW; i++){
         for (int j = 0; j < COL; j++){
             if (j % COL == 0) puts("");
             printf(" %3d ", array[i][j]);
         } 
     }
+    
+    int isFound = searchMatrix(1, searchedNumPosition, ROW, COL, array);
+    printf("\nisFOund: %d at P{%d, %d}\n", isFound, searchedNumPosition[0]/2, searchedNumPosition[1]/2);
 }
 
 /*
@@ -104,30 +103,26 @@ int searchMatrix (int V, int *P, unsigned int rowsize, unsigned int colsize, int
     int middleOffset = (maxOffset + minOffset) / 2; //offset for the location of middle num in A
     
     int *ptr = &A[0][0];    //points to the beginning of the matrix (A)
-    
-    printf("\nminOff: %d maxOff: %d midOff: %d\n", minOffset, maxOffset, middleOffset);
-        
+            
     //computes the actual value for the min, max, and middle
     int minValue = *(ptr + minOffset);
     int maxValue = *(ptr + maxOffset);
     int middleValue = *(ptr + middleOffset);
-
-    printf("\nA min: %d, max: %d, mid: %d\n", minValue, maxValue, middleValue);
-
+    
     //base case
-    if (V == middleValue) return 1;
+    if (V == middleValue) return FOUND;
     
     //if num is not found
-    if (((middleValue == minValue) && (middleValue == maxValue) && V != middleValue)) return -1;
+    if (((middleValue == minValue) && (middleValue == maxValue) && V != middleValue)) return NOTFOUND;
     
     if (V > middleValue){   //if num is greater than the middle val of the array, search the upper half
-        *P = middleOffset;
+        *P = middleOffset - 1;
         //no need to re-assign the 1st element of arr P as it still is the max
         isFound = searchMatrix(V, P, rowsize, colsize, A);
     }
     else if (V < middleValue){      //if num is lesser than the middle val of the array, search the lower half
         *P = minOffset;
-        *(P + 1) = middleOffset;
+        *(P + 1) = middleOffset + 1;
         isFound = searchMatrix(V, P, rowsize, colsize, A);
     }     
     
