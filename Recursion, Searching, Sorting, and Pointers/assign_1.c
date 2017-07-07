@@ -35,7 +35,7 @@ int main(void){
     
     for (int i = 0; i < ROW; i++){
         for (int j = 0; j < COL; j++){
-            if (j % 10 == 0) puts("");
+            if (j % COL == 0) puts("");
             printf(" %3d ", array[i][j]);
         } 
     }
@@ -43,13 +43,13 @@ int main(void){
     int sortedArr = sortMatrix(ROW, COL, array);
     puts("");
     
-    int isFound = searchMatrix(1, searchedNumPosition, ROW, COL, array);
-    printf("\nisFOund: %d at P{%d, %d}\n", isFound, searchedNumPosition[0]/2, searchedNumPosition[1]/2);
+    //int isFound = searchMatrix(1, searchedNumPosition, ROW, COL, array);
+    //printf("\nisFOund: %d at P{%d, %d}\n", isFound, searchedNumPosition[0]/2, searchedNumPosition[1]/2);
 
     
     for (int i = 0; i < ROW; i++){
         for (int j = 0; j < COL; j++){
-            if (j % 10 == 0) puts("");
+            if (j % COL == 0) puts("");
             printf(" %3d ", array[i][j]);
         } 
     }
@@ -64,8 +64,10 @@ int main(void){
 int sortMatrix (unsigned int rowsize, unsigned int colsize, int A[][colsize]){
     int swap = 0;
     int sizeOfArray = rowsize * colsize;
-    
-    for(unsigned int pass = 0; pass < sizeOfArray - pass - 1 && !swap; pass++){
+        
+    //control loop for passes
+    for(unsigned int pass = 0; pass < sizeOfArray - 1 && !swap; ++pass){
+        //control loop for amount of comparisons per pass
         //traverses the matrix of integers
         for(unsigned int i = 0; i < rowsize; i++){
             for(unsigned int j = 0; j < colsize; j++){
@@ -79,8 +81,8 @@ int sortMatrix (unsigned int rowsize, unsigned int colsize, int A[][colsize]){
                     swap = 0;
                 }
             }
-        }
-    }
+        }            
+    }    
     
     return DONE;
 }
