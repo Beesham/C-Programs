@@ -1,7 +1,10 @@
 /*
 	Author: Beesham Sarendranauth, 104854956
 	Date: July 12, 2017
-	Description: This program demonstrated the sorting of a matrix of integers
+	Description: This program demonstrated the sorting and searching of a matrix of integers
+                 through sinking sort and recursive binary search using pointer + offset notation
+    *Note: if a searched number is found, the position will be, if more than one of the value exists,
+           the middle value of the range of same values +/- a position.
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,7 +25,7 @@ void genMatrix(int A[][COL]);
 
 int main(void){
     
-    srand(time(NULL));
+    srand(time(NULL));  //seeds the rand() function
     
     int array[ROW][COL] = {0};    //init array to 0
     int searchedNumPosition[2] = {SIZE - 1, 0}; //the position of the number searched will be stored here
@@ -32,11 +35,9 @@ int main(void){
     displayMatrix(array);   //displays un-sorted matrix
     
     sortMatrix(ROW, COL, array);  
-    puts("");
-    
+   
     displayMatrix(array);   //displays sorted matrix
 
-    puts("");
     puts("");
 
     //asks for number to search for in matrix
@@ -45,7 +46,7 @@ int main(void){
     scanf("%d", &input);
     
     if(searchMatrix(input, searchedNumPosition, ROW, COL, array) == FOUND){
-        printf("\n%s %d %s [%d][%d]}\n", "The number", input,
+        printf("\n%s %d %s [%d][%d]\n", "The number", input,
                                       "is found at position", searchedNumPosition[0], searchedNumPosition[1]);
     }
     else{
@@ -63,7 +64,7 @@ void genMatrix(int A[][COL]){
     for (int i = 0; i < ROW; i++){
         for (int j = 0; j < COL; j++){
             A[i][j] = rand() % 101; //assigns a random positive int from 0 - 100 to a position in the array 
-                                        //(0 + (rand() % (100 + 1 - 0)) is the formula used to get 101
+                                    //(0 + (rand() % (100 + 1 - 0)) is the formula used to get 101
         }
     }
 }
@@ -73,13 +74,37 @@ void genMatrix(int A[][COL]){
     input: the array to be displayed (A)
 */
 void displayMatrix(int const A[][COL]){
+    puts("");
+
     //traverses and displays matrix
     for (int i = 0; i < ROW; i++){
+        
+        //prints column header
+        if (i == 0){
+            printf(" %3s  ", " ");
+            for (int j = 0; j < COL; j++){
+                printf(" %3d ", j);
+            }
+            
+            puts("");
+            
+            printf(" %3s  ", " ");
+            for (int j = 0; j < COL; j++){
+                printf(" %3s ", "V");
+            } 
+        }
+        
+        //prints the value of the matrix at the index
         for (int j = 0; j < COL; j++){
-            if (j % COL == 0) puts("");
+            if (j % COL == 0){
+                puts("");
+                printf(" %3d %s", i, ">");  //prints row header
+            }
             printf(" %3d ", A[i][j]);
         } 
     }
+    
+    puts("");
 }
 
 /*
@@ -126,7 +151,7 @@ int sortMatrix (unsigned int rowsize, unsigned int colsize, int A[][colsize]){
 int searchMatrix (int V, int *P, unsigned int rowsize, unsigned int colsize, int A[][colsize]){
     
     int isFound = NOTFOUND;
-    int minOffset = *P; //offset for the location of min num in A, the 0th element of arr P
+    int minOffset = *P; //offset for the location of min num in A, the 0th element of array P
     int maxOffset = *(P + 1);   //offset for the location of max num in A, the 1st element of array P
     int middleOffset = (maxOffset + minOffset) / 2; //offset for the location of middle num in A
     
@@ -137,17 +162,17 @@ int searchMatrix (int V, int *P, unsigned int rowsize, unsigned int colsize, int
     int maxValue = *(ptr + maxOffset);
     int middleValue = *(ptr + middleOffset);
     
-    //base case
+    //base case, set the position of the num in the array P
     if (V == middleValue){
         P[0] = middleOffset / colsize;    //row of searched num
         P[1] = middleOffset % colsize;    //col of searched num
         return FOUND;
     }
         
-    //if num is not found
+    //if num is not found, set the default location in the array P
     if (((middleValue == minValue) && (middleValue == maxValue) && V != middleValue)){
-        P[0] = -1;
-        P[1] = -1;
+        P[0] = NOTFOUND;
+        P[1] = NOTFOUND;
         return NOTFOUND;
     }
         
