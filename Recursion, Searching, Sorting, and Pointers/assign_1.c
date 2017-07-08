@@ -7,8 +7,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define COL 10
-#define ROW 10
+#define COL 20
+#define ROW 20
 #define SIZE COL * ROW
 #define DONE 1
 #define FOUND 1
@@ -17,6 +17,8 @@
 //function prototypes
 int sortMatrix (unsigned int rowsize, unsigned int colsize, int A[rowsize][colsize]);
 int searchMatrix (int V, int *P, unsigned int rowsize, unsigned int colsize, int A[rowsize][colsize]);
+void displayMatrix(int const A[][COL]);
+void genMatrix(int A[][COL]);
 
 int main(void){
     
@@ -24,38 +26,60 @@ int main(void){
     
     int array[ROW][COL] = {0};    //init array to 0
     int searchedNumPosition[2] = {SIZE - 1, 0}; //the position of the number searched will be stored here
+        
+    genMatrix(array);
     
+    displayMatrix(array);   //displays un-sorted matrix
+    
+    sortMatrix(ROW, COL, array);  
+    puts("");
+    
+    displayMatrix(array);   //displays sorted matrix
+
+    puts("");
+    puts("");
+
+    //asks for number to search for in matrix
     int input;
-    printf("%s","Please enter a positive number:");
+    printf("%s","Please enter a positive number: ");
     scanf("%d", &input);
     
+    if(searchMatrix(input, searchedNumPosition, ROW, COL, array) == FOUND){
+        printf("\n%s %d %s [%d][%d]}\n", "The number", input,
+                                      "is found at position", searchedNumPosition[0], searchedNumPosition[1]);
+    }
+    else{
+        printf("\n%s %d %s [%d][%d]\n", "The number", input,
+                                      "is not found. Default position", searchedNumPosition[0], searchedNumPosition[1]);
+    }
+}
+
+/*
+    genMatrix: generates a random num from 0 - 100 and stores it in a NxM matrix
+    input: the array to be used to store the numbers
+*/
+void genMatrix(int A[][COL]){
     //gens a random num for each element in the array
     for (int i = 0; i < ROW; i++){
         for (int j = 0; j < COL; j++){
-            array[i][j] = rand() % 101; //assigns a random positive int from 0 - 100 to a position in the array 
+            A[i][j] = rand() % 101; //assigns a random positive int from 0 - 100 to a position in the array 
                                         //(0 + (rand() % (100 + 1 - 0)) is the formula used to get 101
         }
     }
-    
+}
+
+/*
+    displayMatrix: displays the values of matrix
+    input: the array to be displayed (A)
+*/
+void displayMatrix(int const A[][COL]){
+    //traverses and displays matrix
     for (int i = 0; i < ROW; i++){
         for (int j = 0; j < COL; j++){
             if (j % COL == 0) puts("");
-            printf(" %3d ", array[i][j]);
+            printf(" %3d ", A[i][j]);
         } 
     }
-    
-    int sortedArr = sortMatrix(ROW, COL, array);
-    puts("");
-       
-    for (int i = 0; i < ROW; i++){
-        for (int j = 0; j < COL; j++){
-            if (j % COL == 0) puts("");
-            printf(" %3d ", array[i][j]);
-        } 
-    }
-    
-    int isFound = searchMatrix(input, searchedNumPosition, ROW, COL, array);
-    printf("\nisFOund: %d at P{%d, %d}\n", isFound, searchedNumPosition[0], searchedNumPosition[1]);
 }
 
 /*
