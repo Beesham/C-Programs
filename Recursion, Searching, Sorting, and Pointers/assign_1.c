@@ -7,8 +7,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define COL 5
-#define ROW 5
+#define COL 10
+#define ROW 10
 #define SIZE COL * ROW
 #define DONE 1
 #define FOUND 1
@@ -24,6 +24,10 @@ int main(void){
     
     int array[ROW][COL] = {0};    //init array to 0
     int searchedNumPosition[2] = {SIZE - 1, 0}; //the position of the number searched will be stored here
+    
+    int input;
+    printf("%s","Please enter a positive number:");
+    scanf("%d", &input);
     
     //gens a random num for each element in the array
     for (int i = 0; i < ROW; i++){
@@ -50,8 +54,8 @@ int main(void){
         } 
     }
     
-    int isFound = searchMatrix(1, searchedNumPosition, ROW, COL, array);
-    printf("\nisFOund: %d at P{%d, %d}\n", isFound, searchedNumPosition[0]/2, searchedNumPosition[1]/2);
+    int isFound = searchMatrix(input, searchedNumPosition, ROW, COL, array);
+    printf("\nisFOund: %d at P{%d, %d}\n", isFound, searchedNumPosition[0], searchedNumPosition[1]);
 }
 
 /*
@@ -110,11 +114,19 @@ int searchMatrix (int V, int *P, unsigned int rowsize, unsigned int colsize, int
     int middleValue = *(ptr + middleOffset);
     
     //base case
-    if (V == middleValue) return FOUND;
-    
+    if (V == middleValue){
+        P[0] = middleOffset / colsize;    //row of searched num
+        P[1] = middleOffset % colsize;    //col of searched num
+        return FOUND;
+    }
+        
     //if num is not found
-    if (((middleValue == minValue) && (middleValue == maxValue) && V != middleValue)) return NOTFOUND;
-    
+    if (((middleValue == minValue) && (middleValue == maxValue) && V != middleValue)){
+        P[0] = -1;
+        P[1] = -1;
+        return NOTFOUND;
+    }
+        
     if (V > middleValue){   //if num is greater than the middle val of the array, search the upper half
         *P = middleOffset - 1;
         //no need to re-assign the 1st element of arr P as it still is the max
