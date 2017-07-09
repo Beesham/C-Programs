@@ -22,6 +22,7 @@ int sortMatrix (unsigned int rowsize, unsigned int colsize, int A[rowsize][colsi
 int searchMatrix (int V, int *P, unsigned int rowsize, unsigned int colsize, int A[rowsize][colsize]);
 void displayMatrix(int const A[][COL]);
 void genMatrix(int A[][COL]);
+int getInput();
 
 int main(void){
     
@@ -29,21 +30,21 @@ int main(void){
     
     int array[ROW][COL] = {0};    //init array to 0
     int searchedNumPosition[2] = {SIZE - 1, 0}; //the position of the number searched will be stored here
+    int input;
         
     genMatrix(array);
     
+    puts("\nUn-sorted randomly generated matrix of values:");
     displayMatrix(array);   //displays un-sorted matrix
     
     sortMatrix(ROW, COL, array);  
    
+    puts("\nSorted previously generated matrix of values:");
     displayMatrix(array);   //displays sorted matrix
-
+    
     puts("");
-
-    //asks for number to search for in matrix
-    int input;
-    printf("%s","Please enter a positive number: ");
-    scanf("%d", &input);
+    
+    input = getInput();
     
     if(searchMatrix(input, searchedNumPosition, ROW, COL, array) == FOUND){
         printf("\n%s %d %s [%d][%d]\n", "The number", input,
@@ -67,6 +68,19 @@ void genMatrix(int A[][COL]){
                                     //(0 + (rand() % (100 + 1 - 0)) is the formula used to get 101
         }
     }
+}
+
+/*
+    getInput: prompts the user for input of type integer
+    output: the value the user input 
+*/
+int getInput(){
+    //asks for number to search for in matrix
+    int input;
+    printf("%s","Please enter a positive number to search (0 - 100): ");
+    scanf("%d", &input);
+    
+    return input;
 }
 
 /*
