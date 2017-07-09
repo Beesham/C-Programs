@@ -1,10 +1,10 @@
 /*
-	Author: Beesham Sarendranauth, 104854956
-	Date: July 12, 2017
-	Description: This program demonstrated the sorting and searching of a matrix of integers
-                 through sinking sort and recursive binary search using pointer + offset notation
-    *Note: if a searched number is found, the position will be, if more than one of the value exists,
-           the middle value of the range of same values +/- a position.
+    Author: Beesham Sarendranauth, 104854956
+    Date: July 12, 2017
+    Description: This program demonstrated the sorting and searching of a matrix of integers
+                through sinking sort and recursive binary search using pointer + offset notation
+    *Note:  if a searched number is found, the position will be, if more than one of the value exists,
+            the middle value of the range of same values +/- a position.
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -73,7 +73,7 @@ void genMatrix(int A[][COL]){
     displayMatrix: displays the values of matrix
     input: the array to be displayed (A)
 */
-void displayMatrix(int const A[][COL]){
+void displayMatrix(const int A[][COL]){
     puts("");
 
     //traverses and displays matrix

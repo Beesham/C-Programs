@@ -3,3 +3,4 @@ a.out
 a.exe.stackdump
 a.out.stackdump
 .assign_1.c.swp
+*.bak
