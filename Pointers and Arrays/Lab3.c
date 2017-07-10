@@ -18,7 +18,7 @@
 int prompt();
 void printArray2D(int array[][N]);
 void populateRandom2D(int array[][N]);
-int linearSearch2D(int array[][N], int num);
+int linearSearch2D(const int array[][N], int num);
 void leftShift2D(int array[][N]);
 
 int main(void){
@@ -141,27 +141,32 @@ void populateRandom2D(int A[][N]){
     for (int i = 0; i < M; i++){
         for (int j = 0; j < N; j++){
             do{		
-                A[i][j] = rand() % 1 + (rand() % (max)); //assigns a random positive int from 1 - max to a position in the array 
+                A[i][j] = 1 + (rand() % (max + 1 - 1)); //assigns a random positive int from 1 - max to a position in the array 
                                                         //(1 + (rand() % (max + 1 - 1)) is the formula used 
+                            printf(" %3d ", A[i][j]);
+
             }while(!linearSearch2D(A, A[i][j]));
         }
     }
 }
 
 /*
-
+    linearSearch2D: searches a 2 dimensional array for a specific value
+    input: the value to search for (num)
+    output: 1 if found, else 0 if not found
 */
-int linearSearch2D(int A[][N], int num){
+int linearSearch2D(const int A[][N], int num){
     int isFound = NOTFOUND;
+    
     for (int i = 0; i < M; i++){
         for (int j = 0; j < N; j++){
             if(A[i][j] == num){ 
                 isFound = FOUND;
-                i = M;
-                j = N;
+                return isFound;
             }
         }
     }
+    
     return isFound;
 }
 
