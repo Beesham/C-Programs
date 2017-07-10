@@ -26,54 +26,54 @@ int main(void){
     int array[M][N] = {0}; //init the array to 0's
     int selection;
 
-while(selection != EOF){ 
-    
-    //displays a menu
-    puts("");
-    puts("*************");
-    puts("*   Menu    *");
-    puts("*************");
-    puts("1. Populate Array");
-    puts("2. Print Array");
-    puts("3. Search Array");
-    puts("4. Left Shift Array");
-
-    puts("");
-    puts("Please select the number index of your operation e.g 1 \nEnter -1 to quit (ERROR prints upon exit)");
-    printf("%s","Input: ");
-    scanf("%d", &selection);
-
-    //switch statement to select appropriate operation
-    switch(selection){
-      case 1:{ 
-          populateRandom2D(array);
-      }
-      break;
-      
-      case 2:{ 
-	  printArray2D(array);       
-      }
-      break;
-      
-      case 3:{ 
-	  int input;
-	  input = prompt();
-	  if(linearSearch2D(array, input)) puts("Your number was found");
-	  else puts("Your number is not found!");
-      }
-      break;
-      
-      case 4:{ 
-       
-      }
-      break;
-                      
-      default:
-          puts("ERROR: selection must be from the menu shown");
-    }
+    while(selection != EOF){ 
         
-    getchar();  //waits for user to hit Enter to continue
-}
+        //displays a menu
+        puts("");
+        puts("*************");
+        puts("*   Menu    *");
+        puts("*************");
+        puts("1. Populate Array");
+        puts("2. Print Array");
+        puts("3. Search Array");
+        puts("4. Left Shift Array");
+
+        puts("");
+        puts("Please select the number index of your operation e.g 1 \nEnter -1 to quit (ERROR prints upon exit)");
+        printf("%s","Input: ");
+        scanf("%d", &selection);
+
+        //switch statement to select appropriate operation
+        switch(selection){
+          case 1:{ 
+                populateRandom2D(array);
+          }
+          break;
+          
+          case 2:{ 
+                printArray2D(array);       
+          }
+          break;
+          
+          case 3:{ 
+                int input;
+                input = prompt();
+                if(linearSearch2D(array, input)) puts("Your number was found");
+                else puts("Your number is not found!");
+          }
+          break;
+          
+          case 4:{ 
+                leftShift2D(array);
+          }
+          break;
+                          
+          default:
+              puts("ERROR: selection must be from the menu shown");
+        }
+            
+        getchar();  //waits for user to hit Enter to continue
+    }
 
 }
 
@@ -141,10 +141,9 @@ void populateRandom2D(int A[][N]){
     for (int i = 0; i < M; i++){
         for (int j = 0; j < N; j++){
             do{		
-		A[i][j] = rand() % 1 + (rand() % (max)); //assigns a random positive int from 1 - max to a position in the array 
-                                    //(1 + (rand() % (max + 1 - 1)) is the formula used 
-	    }while(!linearSearch2D(A, A[i][j]));
-
+                A[i][j] = rand() % 1 + (rand() % (max)); //assigns a random positive int from 1 - max to a position in the array 
+                                                        //(1 + (rand() % (max + 1 - 1)) is the formula used 
+            }while(!linearSearch2D(A, A[i][j]));
         }
     }
 }
@@ -157,10 +156,10 @@ int linearSearch2D(int A[][N], int num){
     for (int i = 0; i < M; i++){
         for (int j = 0; j < N; j++){
             if(A[i][j] == num){ 
-	 	isFound = FOUND;
-		i = M;
-		j = N;
-	    }
+                isFound = FOUND;
+                i = M;
+                j = N;
+            }
         }
     }
     return isFound;
@@ -174,9 +173,12 @@ void leftShift2D(int A[][N]){
     
     for (int i = 0; i < M; i++){
         for (int j = 0; j < N; j++){
+            int hold = A[i][j];
             A[i][j] = A[i][j+1];
-	}
+            A[i][j+1] = hold;
+        }
     }
-
-    A[M][N] = holdPos1;
+    
+    A[M-1][N-1] = holdPos1;
+    printArray2D(A);
 }
