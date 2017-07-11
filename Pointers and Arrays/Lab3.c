@@ -16,13 +16,14 @@
 
 //prototypes
 int prompt();
+void zeroArray(int array[][N]);
 void printArray2D(int array[][N]);
 void populateRandom2D(int array[][N]);
 int linearSearch2D(const int array[][N], int num);
 void leftShift2D(int array[][N]);
 
 int main(void){
-    srand(time(NULL));
+    srand(time(NULL));  //seeds the rand() 
     int array[M][N] = {0}; //init the array to 0's
     int selection;
 
@@ -128,6 +129,18 @@ void printArray2D(int A[][N]){
 }
 
 /*
+    seroArray: fills the array with zero, so as to re-initialize it
+    input: the array to be zeroed (A)
+*/
+void zeroArray(int A[][N]){
+    for (int i = 0; i < M; i++){
+        for (int j = 0; j < N; j++){
+            A[i][j] = 0;
+        }
+    }
+}
+
+/*
     populateRandom2D: generates a random num from 1 - MxN and stores it in a 2D array
     input: the array to be used to store the numbers
 
@@ -135,17 +148,19 @@ void printArray2D(int A[][N]){
 void populateRandom2D(int A[][N]){
     int max = M * N;
 
-    //TODO: implement check for num uniqueness
+    zeroArray(A);   //zeros the array first, in case of subsequent calls to populate the array
 
-    //gens a random num for each element in the array
     for (int i = 0; i < M; i++){
         for (int j = 0; j < N; j++){
-            do{		
-                A[i][j] = 1 + (rand() % (max + 1 - 1)); //assigns a random positive int from 1 - max to a position in the array 
-                                                        //(1 + (rand() % (max + 1 - 1)) is the formula used 
-                            printf(" %3d ", A[i][j]);
 
-            }while(!linearSearch2D(A, A[i][j]));
+            int randNum;
+            //Generates a random number and checks if it already exists in the array
+            do{		 
+                
+                randNum = 1 + (rand() % (max + 1 - 1)); //assigns a random positive int from 1 - max to a position in the array 
+                                                        //(1 + (rand() % (max + 1 - 1)) is the formula used 
+            }while(linearSearch2D(A, randNum));
+            A[i][j] = randNum;
         }
     }
 }
@@ -166,16 +181,18 @@ int linearSearch2D(const int A[][N], int num){
             }
         }
     }
-    
+
     return isFound;
 }
 
 /*
-
+    leftShift2D: left shifts the entire array by 1, replacing the last element with the first
+    input: the array to be leftshifted (A)
 */
 void leftShift2D(int A[][N]){
-    int holdPos1 = A[0][0];
+    int holdPos1 = A[0][0]; //holds the value of the first element of the array
     
+    //Loops through the array and swaps each element with its preceding one
     for (int i = 0; i < M; i++){
         for (int j = 0; j < N; j++){
             int hold = A[i][j];
@@ -184,6 +201,5 @@ void leftShift2D(int A[][N]){
         }
     }
     
-    A[M-1][N-1] = holdPos1;
-    printArray2D(A);
+    A[M-1][N-1] = holdPos1; //places the first element in the last position in the array
 }
