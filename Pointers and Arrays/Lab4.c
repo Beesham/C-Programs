@@ -1,27 +1,42 @@
 /*
     Author: Beesham Sarendranauth
-    Date: 2017/07/18
+    Date: 2017/07/17
     Description: performs tasks using pointer operations, such as finding 
-    largest number, or swaping   
+    largest number, or swapping   
 */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define SIZE 10
 
 //prototypes
 int* largest(int *array, int size);
 void swap(int *x, int *y);
+void populateRandomArray(int *A, int size);
 
 int main (void){
-    int array[SIZE] = {2,0,6,7,3,9,5,12,16,27};
+    srand(time(NULL));  //seeds rand()
+    
+    int array[SIZE] = {0};
     int a = 3;
     int b = 6;
 
-    swap(&a, &b);
-    printf("%d %d", a, b);
-    printf("%d", *(largest(array, SIZE)));
+    //Tests swap function
+    printf("%s %d %d\n", "Value of a, b respectively:", a, b);
+    printf("%s", "Swapping...");
+    getchar();    
+    swap(&a, &b);   //performs swap
+    printf("%s %d %d\n", "New value of a, b respectively:", a, b);
+
+    puts("");
+    
+    //Tests largest function
+    printf("%s", "Your array numbers are... ");
+    getchar();
+    populateRandomArray(array, SIZE);   //populates the arrays with random number
+    printf("\n%s %d %s %p", "  and the largest number is", *largest(array, SIZE), "at address", (largest(array, SIZE)));
 }
 
 /*
@@ -30,19 +45,16 @@ int main (void){
     output: the address of the largest value
 */
 int* largest(int *array, int size){
-    int *holdPtr = NULL;
-    int *arrayPtr = array;
-    
-    for(unsigned int i = 0; i < size; i++){
-        if(*arrayPtr > *(arrayPtr + i)){
-            holdPtr = arrayPtr;
-        }
-        else{
-            holdPtr = (arrayPtr + 1);
+    int *largestElementPtr = array + 1; //init to 2nd element of array so as to facilitate comparisons 
+
+    //loop to compare elements to find largest element address
+    for (unsigned int i = 0; i < size; i++, array++){
+        if (*array > *largestElementPtr ){
+            largestElementPtr = array;
         }
     }
     
-    return holdPtr;
+    return largestElementPtr;
 }
 
 /*
@@ -53,4 +65,20 @@ void swap(int *x, int *y){
     int hold = *y;
     *y = *x;
     *x = hold;
+}
+
+/*
+    populateRandomArray: generates a random num from 1 - MxN and stores it in a 2D array
+    input: the array to be used to store the numbers
+*/
+void populateRandomArray(int *A, int size){
+    int max = 100;
+
+    for (int j = 0; j < size; j++){
+        //Generates a random number and checks if it already exists in the array
+        *(A + j) = 1 + (rand() % (max + 1 - 1)); //assigns a random positive int from 1 - max to a position in the array 
+                                                //(1 + (rand() % (max + 1 - 1)) is the formula used 
+        
+        printf(" %3d %p\n", *(A + j), A + j);
+    }
 }
