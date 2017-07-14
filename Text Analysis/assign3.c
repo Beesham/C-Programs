@@ -18,12 +18,14 @@ int wordLengthAnalysis(const char **bufferPtr, int numOfLines, int lenght);
 void wordAnalysis(const char **bufferPtr, int numOfLines);
 unsigned long getText(char **bufferPtr);
 
+//TODO: write cleanup function to free malloc
+
 int main(void){
-    char *bufferPtr[MAX_LINES];
-    unsigned int numOfLines;
-    //numOfLines = 
-    getText(bufferPtr);
-    //puts(bufferPtr[1]);
+    char *bufferPtr[MAX_LINES];// = {"This is line: 1", "This is line: 2"};
+    unsigned int numOfLines = 2;
+    numOfLines = getText(bufferPtr);
+    
+    //letterAnalysis(bufferPtr, numOfLines);
 }
 
 /*
@@ -31,6 +33,45 @@ int main(void){
     input: an array of text (bufferPtr), the number of lines to be analysed (numOfLines)
 */
 void letterAnalysis(const char **bufferPtr, int numOfLines){
+    const char *alphabet = "abcdefghijklmnopqrstuvwxyz";
+    
+    char *copy[MAX_LINE];
+    
+    for(unsigned int i = 0; i < numOfLines; i++){
+        bufferPtr[i] = malloc(sizeof(char) *  MAX_LINE_LENGTH);  //allocates memory for each string in the array, ch12.2
+
+        for(unsigned int j = 0; (bufferPtr[i])[j] != '\0'; j++){
+            //printf("%c",  (bufferPtr[i])[j]);
+            char aChar = (bufferPtr[i])[j];
+            if(isalpha(aChar)){
+                aChar = tolower(aChar);
+            }
+            
+            int count = 0;
+            
+            
+            
+            printf("%c %d",  aChar, count);
+        }
+    }
+    
+    
+    for(unsigned int i = 0; i < numOfLines; i++){
+        for(unsigned int j = 0; (bufferPtr[i])[j] != '\0'; j++){
+            //printf("%c",  (bufferPtr[i])[j]);
+            char aChar = (bufferPtr[i])[j];
+            if(isalpha(aChar)){
+                aChar = tolower(aChar);
+            }
+            
+            int count = 0;
+            
+            
+            
+            printf("%c %d",  aChar, count);
+        }
+    }
+    
     
 }
 
@@ -55,7 +96,6 @@ void wordAnalysis(const char **bufferPtr, int numOfLines){
     output: the number of lines to be analysed
 */
 unsigned long getText(char **bufferPtr){
-    char s[MAX_LINE_LENGTH];
     char input[3];
     unsigned long numOfLines = 0;
     
@@ -71,10 +111,11 @@ unsigned long getText(char **bufferPtr){
         getchar();
     }
     else{
-        for(int i = 0; i < numOfLines; i++){
-            bufferPtr[i] = fgets(s, MAX_LINE_LENGTH, stdin);
+        for(unsigned int i = 0; i < numOfLines; i++){
+            bufferPtr[i] = malloc(sizeof(char) *  MAX_LINE_LENGTH);  //allocates memory for each string in the array, ch12.2
+            fgets(bufferPtr[i], MAX_LINE_LENGTH, stdin);
         }
     }
-    
+
     return numOfLines;
 }
