@@ -35,36 +35,36 @@ int main(void){
 void letterAnalysis(const char **bufferPtr, int numOfLines){
     const char *alphabet = "abcdefghijklmnopqrstuvwxyz";
     
-    char *copy[MAX_LINES];
+    char copy[MAX_LINES * MAX_LINE_LENGTH];
     
-    //creates a copy of the array 
-    for(unsigned int i = 0; i < numOfLines; i++){
-        copy[i] = malloc(sizeof(char) *  MAX_LINE_LENGTH);  //allocates memory for each string in the array, ch12.2
-        strcpy(copy[i], bufferPtr[i]);
+    strcpy(copy, bufferPtr[0]); //copies first string in the buffer for subsequent concatenation
+   
+    //concatenates all the strings together 
+    for(unsigned int i = 1; i < numOfLines; i++){
+        strcat(copy, bufferPtr[i]);
     }
     
-    // converts all convertable characters to lowercase
-    for(unsigned int i = 0; i < numOfLines; i++){
-        for(unsigned int j = 0; (copy[i])[j] != '\0'; j++){
-            if(isalpha((copy[i])[j])){
-                (copy[i])[j] = tolower((copy[i])[j]);
-            }
+
+    //converts all convertable characters to lowercase
+    for(unsigned int j = 0; (copy[j]) != '\0'; j++){
+        if(isalpha((copy[j]))){
+            (copy[j]) = tolower((copy[j]));
         }
     }
-    
+
     //searches for occurances of letters
-    for(unsigned int i = 0; i < numOfLines; i++){
-        for(unsigned int j = 0; alphabet[j] != '\0'; j++){ 
-            int count = 0;
-            char *str = strchr(copy[i], alphabet[j]);;
-            while(str != NULL){
-                count++;
-                str = strchr(str+1, alphabet[j]);
-            }
-            
-            printf("%c :%d\n", alphabet[j], count);
+    for(unsigned int j = 0; alphabet[j] != '\0'; j++){ 
+        int count = 0;
+        char *str = strchr(copy, alphabet[j]);;
+        while(str != NULL){
+            count++;
+            str = strchr(str+1, alphabet[j]);
         }
+        
+        if(j % 5 == 0) puts("");
+        printf("%c : %d   ", alphabet[j], count);
     }
+    
     
 }
 
