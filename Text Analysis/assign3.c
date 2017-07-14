@@ -25,7 +25,7 @@ int main(void){
     unsigned int numOfLines = 2;
     numOfLines = getText(bufferPtr);
     
-    //letterAnalysis(bufferPtr, numOfLines);
+    letterAnalysis(bufferPtr, numOfLines);
 }
 
 /*
@@ -35,43 +35,36 @@ int main(void){
 void letterAnalysis(const char **bufferPtr, int numOfLines){
     const char *alphabet = "abcdefghijklmnopqrstuvwxyz";
     
-    char *copy[MAX_LINE];
+    char *copy[MAX_LINES];
     
+    //creates a copy of the array 
     for(unsigned int i = 0; i < numOfLines; i++){
-        bufferPtr[i] = malloc(sizeof(char) *  MAX_LINE_LENGTH);  //allocates memory for each string in the array, ch12.2
-
-        for(unsigned int j = 0; (bufferPtr[i])[j] != '\0'; j++){
-            //printf("%c",  (bufferPtr[i])[j]);
-            char aChar = (bufferPtr[i])[j];
-            if(isalpha(aChar)){
-                aChar = tolower(aChar);
+        copy[i] = malloc(sizeof(char) *  MAX_LINE_LENGTH);  //allocates memory for each string in the array, ch12.2
+        strcpy(copy[i], bufferPtr[i]);
+    }
+    
+    // converts all convertable characters to lowercase
+    for(unsigned int i = 0; i < numOfLines; i++){
+        for(unsigned int j = 0; (copy[i])[j] != '\0'; j++){
+            if(isalpha((copy[i])[j])){
+                (copy[i])[j] = tolower((copy[i])[j]);
             }
-            
-            int count = 0;
-            
-            
-            
-            printf("%c %d",  aChar, count);
         }
     }
     
-    
+    //searches for occurances of letters
     for(unsigned int i = 0; i < numOfLines; i++){
-        for(unsigned int j = 0; (bufferPtr[i])[j] != '\0'; j++){
-            //printf("%c",  (bufferPtr[i])[j]);
-            char aChar = (bufferPtr[i])[j];
-            if(isalpha(aChar)){
-                aChar = tolower(aChar);
+        for(unsigned int j = 0; alphabet[j] != '\0'; j++){ 
+            int count = 0;
+            char *str = strchr(copy[i], alphabet[j]);;
+            while(str != NULL){
+                count++;
+                str = strchr(str+1, alphabet[j]);
             }
             
-            int count = 0;
-            
-            
-            
-            printf("%c %d",  aChar, count);
+            printf("%c :%d\n", alphabet[j], count);
         }
     }
-    
     
 }
 
