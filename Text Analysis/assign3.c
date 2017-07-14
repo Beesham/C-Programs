@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #define MAX_LINES 10
 #define MAX_LINE_LENGTH 80
@@ -15,17 +16,19 @@
 void letterAnalysis(const char **bufferPtr, int numOfLines);
 int wordLengthAnalysis(const char **bufferPtr, int numOfLines, int lenght);
 void wordAnalysis(const char **bufferPtr, int numOfLines);
-int getText(char **bufferPtr);
+unsigned long getText(char **bufferPtr);
 
 int main(void){
     char *bufferPtr[MAX_LINES];
     unsigned int numOfLines;
-    numOfLines = getText(bufferPtr);
-    puts(bufferPtr[1]);
+    //numOfLines = 
+    getText(bufferPtr);
+    //puts(bufferPtr[1]);
 }
 
 /*
-
+    letterAnalysis: analyses the number of occurences of each letter in the text
+    input: an array of text (bufferPtr), the number of lines to be analysed (numOfLines)
 */
 void letterAnalysis(const char **bufferPtr, int numOfLines){
     
@@ -51,20 +54,26 @@ void wordAnalysis(const char **bufferPtr, int numOfLines){
     input: the string array the text is to be stored in (bufferPtr)
     output: the number of lines to be analysed
 */
-int getText(char **bufferPtr){
+unsigned long getText(char **bufferPtr){
     char s[MAX_LINE_LENGTH];
-    int numOfLines;
+    char input[3];
+    unsigned long numOfLines = 0;
     
     printf("%s", "How many lines of text do you want to analyse: ");
-    scanf("%2d", &numOfLines);
+    scanf("%s", input);
+    input[2] = '\0';
         
+    numOfLines = strtol(input, NULL, 10);
     getchar();
     
-    //TODO: validate input
-    
-    for(int i = 0; i < numOfLines; i++){
-        bufferPtr[i] = fgets(s, MAX_LINE_LENGTH, stdin);
-        //puts(bufferPtr[i]);
+    if (!numOfLines){
+        puts("Invalid input! Exiting...");
+        getchar();
+    }
+    else{
+        for(int i = 0; i < numOfLines; i++){
+            bufferPtr[i] = fgets(s, MAX_LINE_LENGTH, stdin);
+        }
     }
     
     return numOfLines;
