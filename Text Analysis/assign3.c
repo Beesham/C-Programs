@@ -12,26 +12,29 @@
 #define MAX_LINE_LENGTH 80
 
 //prototypes
-void letterAnalysis(char *buffer, int numOfLines);
-int wordLengthAnalysis(char *buffer, int numOfLines, int lenght);
-void wordAnalysis(char *buffer, int numOfLines);
-void getText(char *buffer);
+void letterAnalysis(const char **bufferPtr, int numOfLines);
+int wordLengthAnalysis(const char **bufferPtr, int numOfLines, int lenght);
+void wordAnalysis(const char **bufferPtr, int numOfLines);
+int getText(char **bufferPtr);
 
 int main(void){
-
+    char *bufferPtr[MAX_LINES];
+    unsigned int numOfLines;
+    numOfLines = getText(bufferPtr);
+    puts(bufferPtr[1]);
 }
 
 /*
 
 */
-void letterAnalysis(char *buffer, int numOfLines){
+void letterAnalysis(const char **bufferPtr, int numOfLines){
     
 }
 
 /*
 
 */
-int wordLengthAnalysis(char *buffer, int numOfLines, int lenght){
+int wordLengthAnalysis(const char **bufferPtr, int numOfLines, int lenght){
     
     return 0;
 }
@@ -39,13 +42,30 @@ int wordLengthAnalysis(char *buffer, int numOfLines, int lenght){
 /*
 
 */
-void wordAnalysis(char *buffer, int numOfLines){
+void wordAnalysis(const char **bufferPtr, int numOfLines){
     
 }
 
 /*
-
+    getText: reads N amount of text input from the user
+    input: the string array the text is to be stored in (bufferPtr)
+    output: the number of lines to be analysed
 */
-void getText(char *buffer){
+int getText(char **bufferPtr){
+    char s[MAX_LINE_LENGTH];
+    int numOfLines;
     
+    printf("%s", "How many lines of text do you want to analyse: ");
+    scanf("%2d", &numOfLines);
+        
+    getchar();
+    
+    //TODO: validate input
+    
+    for(int i = 0; i < numOfLines; i++){
+        bufferPtr[i] = fgets(s, MAX_LINE_LENGTH, stdin);
+        //puts(bufferPtr[i]);
+    }
+    
+    return numOfLines;
 }
