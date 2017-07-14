@@ -3,6 +3,8 @@
 	Date: 2017/07/19
 	Description: This program analyses text. It determines how many times words are used,
     letter repetition, and word length repetition
+    
+    *Note: if inputting from a file, the first line must have the number of lines to be analysed + 1
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,12 +41,13 @@ void letterAnalysis(const char **bufferPtr, int numOfLines){
     
     strcpy(copy, bufferPtr[0]); //copies first string in the buffer for subsequent concatenation
    
+               printf("%s", copy);
+
     //concatenates all the strings together 
     for(unsigned int i = 1; i < numOfLines; i++){
         strcat(copy, bufferPtr[i]);
     }
     
-
     //converts all convertable characters to lowercase
     for(unsigned int j = 0; (copy[j]) != '\0'; j++){
         if(isalpha((copy[j]))){
@@ -62,14 +65,12 @@ void letterAnalysis(const char **bufferPtr, int numOfLines){
         }
         
         if(j % 5 == 0) puts("");
-        printf("%c : %d   ", alphabet[j], count);
+        printf("%c : %3d   ", alphabet[j], count);
     }
-    
-    
 }
 
 /*
-
+    wordLengthAnalysis: 
 */
 int wordLengthAnalysis(const char **bufferPtr, int numOfLines, int lenght){
     
@@ -109,6 +110,6 @@ unsigned long getText(char **bufferPtr){
             fgets(bufferPtr[i], MAX_LINE_LENGTH, stdin);
         }
     }
-
+    
     return numOfLines;
 }
