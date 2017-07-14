@@ -13,10 +13,11 @@
 
 #define MAX_LINES 10
 #define MAX_LINE_LENGTH 80
+#define MAX_WORD_LENGTH 20
 
 //prototypes
 void letterAnalysis(const char **bufferPtr, int numOfLines);
-int wordLengthAnalysis(const char **bufferPtr, int numOfLines, int lenght);
+int wordLengthAnalysis(const char **bufferPtr, int numOfLines, int length);
 void wordAnalysis(const char **bufferPtr, int numOfLines);
 unsigned long getText(char **bufferPtr);
 
@@ -25,9 +26,21 @@ unsigned long getText(char **bufferPtr);
 int main(void){
     char *bufferPtr[MAX_LINES];// = {"This is line: 1", "This is line: 2"};
     unsigned int numOfLines = 2;
+    unsigned int numOfWords = 0;
     numOfLines = getText(bufferPtr);
     
     letterAnalysis(bufferPtr, numOfLines);
+    
+    
+    numOfWords = wordLengthAnalysis(bufferPtr, numOfLines, 2);
+    const char *singleWord = "word";
+    const char *pluralWord = "words";
+    if(numOfWords <= 1){
+        printf("%3d %s %s %d", numOfWords, singleWord, "of length", 1);
+    }
+    else{
+        printf("%3d %s %s %d", numOfWords, pluralWord, "of length", 1);
+    }
 }
 
 /*
@@ -70,11 +83,35 @@ void letterAnalysis(const char **bufferPtr, int numOfLines){
 }
 
 /*
-    wordLengthAnalysis: 
+    wordLengthAnalysis: analyses the amount of words that are of a certain length
+    input: an array of text (bufferPtr), the number of lines to be analysed (numOfLines), the lenght of a word to look for (length)
+    output: the amount of words (count) found having the specified length 
 */
-int wordLengthAnalysis(const char **bufferPtr, int numOfLines, int lenght){
+int wordLengthAnalysis(const char **bufferPtr, int numOfLines, int length){
+    char copy[MAX_LINES * MAX_LINE_LENGTH];
     
-    return 0;
+    strcpy(copy, bufferPtr[0]); //copies first string in the buffer for subsequent concatenation
+   
+               printf("%s", copy);
+
+    //concatenates all the strings together 
+    for(unsigned int i = 1; i < numOfLines; i++){
+        strcat(copy, bufferPtr[i]);
+    }
+    
+    char *strTokenPtr;
+    int count = 0;
+    
+    strTokenPtr = strtok(copy, " :',?.!()’"); //to get curly single quote hold alt + 0146 (num lock must be on)
+    while(strTokenPtr != NULL){
+        printf("%s\n", strTokenPtr);
+        if(strlen(strTokenPtr) == length){
+            count++;
+        }
+        strTokenPtr = strtok(NULL, " :',?.!()’");
+    }
+    
+    return count;
 }
 
 /*
