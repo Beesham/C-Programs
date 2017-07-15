@@ -1,7 +1,7 @@
 /*
-	Author: Beesham Sarendranauth, 104854956
-	Date: 2017/07/19
-	Description: This program analyses text. It determines how many times words are used,
+    Author: Beesham Sarendranauth, 104854956
+    Date: 2017/07/19
+    Description: This program analyses text. It determines how many times words are used,
     letter repetition, and word length repetition
     *Note: reading from a file, the file must begin with the number of lines to be read then follwed in a
     new line the text. Reading more than 10 lines causes undefined behaviour (Seg. faults)
