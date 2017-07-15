@@ -20,31 +20,49 @@ int wordLengthAnalysis(char **bufferPtr, int numOfLines, int length);
 void wordAnalysis(char **bufferPtr, int numOfLines);
 unsigned long getText(char **bufferPtr);
 char* make1DArrayFrom2D(char *destination, char **source, int numOfLines);
+void testWordLengthAnalysis(char **bufferPtr, int numOfLines, int wordLength);
 
 
 int main(void){
     
     char *bufferPtr[MAX_LINES];
-    unsigned int numOfLines = 2;
-    unsigned int numOfWords = 0;
+    unsigned int numOfLines = 0;
     
     numOfLines = getText(bufferPtr);
     
-    letterAnalysis(bufferPtr, numOfLines);
-    wordAnalysis(bufferPtr, numOfLines);
-    
-    numOfWords = wordLengthAnalysis(bufferPtr, numOfLines, 2);
+    if(numOfLines > 0){
+        letterAnalysis(bufferPtr, numOfLines);
+        
+        testWordLengthAnalysis(bufferPtr, numOfLines, 1);
+        testWordLengthAnalysis(bufferPtr, numOfLines, 2);
+        testWordLengthAnalysis(bufferPtr, numOfLines, 3);
+        testWordLengthAnalysis(bufferPtr, numOfLines, 4);
+        testWordLengthAnalysis(bufferPtr, numOfLines, 6);
+        testWordLengthAnalysis(bufferPtr, numOfLines, 7);
+        testWordLengthAnalysis(bufferPtr, numOfLines, 8);
+        testWordLengthAnalysis(bufferPtr, numOfLines, 9);
+        testWordLengthAnalysis(bufferPtr, numOfLines, 10);
+
+        wordAnalysis(bufferPtr, numOfLines);
+        
+            
+        void cleanUp(char **bufferPtr, int numOfLines);
+        cleanUp(bufferPtr, numOfLines);
+    }
+}
+
+void testWordLengthAnalysis(char **bufferPtr, int numOfLines, int wordLength){
+    unsigned int numOfWords = 0;
+
+    numOfWords = wordLengthAnalysis(bufferPtr, numOfLines, wordLength);
     const char *singleWord = "word";
     const char *pluralWord = "words";
     if(numOfWords <= 1){
-        printf("%3d %s %s %d", numOfWords, singleWord, "of length", 2);
+        printf("%3d %s %s %d\n", numOfWords, singleWord, "of length", wordLength);
     }
     else{
-        printf("%3d %s %s %d", numOfWords, pluralWord, "of length", 2);
+        printf("%3d %s %s %d\n", numOfWords, pluralWord, "of length", wordLength);
     }
-    
-    void cleanUp(char **bufferPtr, int numOfLines);
-    cleanUp(bufferPtr, numOfLines);
 }
 
 /*
@@ -94,6 +112,8 @@ void letterAnalysis(char **bufferPtr, int numOfLines){
         if(j % 5 == 0) puts("");
         printf("%c : %3d   ", alphabet[j], count);
     }
+    
+    puts("");
 }
 
 /*
@@ -110,12 +130,12 @@ int wordLengthAnalysis(char **bufferPtr, int numOfLines, int length){
     char *strTokenPtr;
     int count = 0;
     
-    strTokenPtr = strtok(copy, " :',?.!()’"); //to get curly single quote hold alt + 0146 (num lock must be on)
+    strTokenPtr = strtok(copy, " "); //to get curly single quote hold alt + 0146 (num lock must be on)
     while(strTokenPtr != NULL){
         if(strlen(strTokenPtr) == length){
             count++;
         }
-        strTokenPtr = strtok(NULL, " :',?.!()’");
+        strTokenPtr = strtok(NULL, " ");
     }
     
     return count;
@@ -149,7 +169,7 @@ void wordAnalysis(char **bufferPtr, int numOfLines){
     //re-copies the data to re-use variable and use unmodified data
     strcpy(copy2, copy); 
     
-    char wordArray2D[count][MAX_WORD_LENGTH];
+    char wordArray2D[wordCount][MAX_WORD_LENGTH];
     
     //tokenizes and stores each word in a 2D word array
     strTokenPtr = strtok(copy2, " \r\n"); 
@@ -170,9 +190,11 @@ void wordAnalysis(char **bufferPtr, int numOfLines){
             }
         }
          
-        printf("\n%s: %d\n", wordArray2D[i], newCount);
+        printf("\n%s: %d\n", wordArray2D[i], occurrences);
         occurrences = 0;
     }
+    
+    puts("");
     
 }
 
@@ -190,6 +212,8 @@ unsigned long getText(char **bufferPtr){
         
     numOfLines = strtol(input, NULL, 10);
     getchar();
+    
+    if(numOfLines == 0) return 0;
     
     if (!numOfLines){
         puts("Invalid input! Exiting...");
@@ -210,7 +234,9 @@ unsigned long getText(char **bufferPtr){
     input: an array of text (bufferPtr), the number of lines to be analysed (numOfLines)
 */
 void cleanUp(char **bufferPtr, int numOfLines){
-    for(unsigned int i = 0; i < numOfLines; i++){
-            free(bufferPtr[i]); //frees the allocated memory for each string in the array, ch12.2
+    if(bufferPtr != NULL){
+        for(unsigned int i = 0; i < numOfLines; i++){
+                free(bufferPtr[i]); //frees the allocated memory for each string in the array, ch12.2
+        }
     }
 }
