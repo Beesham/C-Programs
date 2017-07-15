@@ -32,7 +32,8 @@ int main(void){
     
     if(numOfLines > 0){
         letterAnalysis(bufferPtr, numOfLines);
-        
+        puts("");
+
         testWordLengthAnalysis(bufferPtr, numOfLines, 1);
         testWordLengthAnalysis(bufferPtr, numOfLines, 2);
         testWordLengthAnalysis(bufferPtr, numOfLines, 3);
@@ -44,24 +45,28 @@ int main(void){
         testWordLengthAnalysis(bufferPtr, numOfLines, 10);
 
         wordAnalysis(bufferPtr, numOfLines);
-        
             
         void cleanUp(char **bufferPtr, int numOfLines);
         cleanUp(bufferPtr, numOfLines);
     }
 }
 
+/*
+    testWordLengthAnalysis: performs tests on the word length analysis function and prints the results
+    input: an array of text (bufferPtr), the number of lines to be analysed (numOfLines), the length of a word to look for (length)
+*/
 void testWordLengthAnalysis(char **bufferPtr, int numOfLines, int wordLength){
+    
     unsigned int numOfWords = 0;
 
     numOfWords = wordLengthAnalysis(bufferPtr, numOfLines, wordLength);
     const char *singleWord = "word";
     const char *pluralWord = "words";
     if(numOfWords <= 1){
-        printf("%3d %s %s %d\n", numOfWords, singleWord, "of length", wordLength);
+        printf("%3d %-5s %s %d\n", numOfWords, singleWord, "of length", wordLength);
     }
     else{
-        printf("%3d %s %s %d\n", numOfWords, pluralWord, "of length", wordLength);
+        printf("%3d %-5s %s %d\n", numOfWords, pluralWord, "of length", wordLength);
     }
 }
 
@@ -87,6 +92,7 @@ char* make1DArrayFrom2D(char *destination, char **source, int numOfLines){
     input: an array of text (bufferPtr), the number of lines to be analysed (numOfLines)
 */
 void letterAnalysis(char **bufferPtr, int numOfLines){
+    puts("");
     const char *alphabet = "abcdefghijklmnopqrstuvwxyz";
     
     //makes a copy of the original data to avoid data destruction
@@ -146,7 +152,11 @@ int wordLengthAnalysis(char **bufferPtr, int numOfLines, int length){
     input: an array of text (bufferPtr), the number of lines to be analysed (numOfLines)
 */
 void wordAnalysis(char **bufferPtr, int numOfLines){
+    puts("");
     
+    //used for printing results
+    const char *singleWord = "time";
+    const char *pluralWord = "times";
 
     //makes a copy of the original data to avoid data destruction
     char copy[MAX_LINES * MAX_LINE_LENGTH];
@@ -190,12 +200,15 @@ void wordAnalysis(char **bufferPtr, int numOfLines){
             }
         }
          
-        printf("\n%s: %d\n", wordArray2D[i], occurrences);
+        //printf("\n%s: %d\n", wordArray2D[i], occurrences);
+        if(occurrences <= 1){
+            printf("\"%s\" %*s %d %s\n", wordArray2D[i], 20 - (int) strlen(wordArray2D[i]), "appeared", occurrences, singleWord);
+        }
+        else{
+            printf("\"%s\" %*s %d %s\n",  wordArray2D[i], 20 - (int) strlen(wordArray2D[i]), "appeared", occurrences, pluralWord);
+        }
         occurrences = 0;
-    }
-    
-    puts("");
-    
+    }    
 }
 
 /*
@@ -220,7 +233,7 @@ unsigned long getText(char **bufferPtr){
         getchar();
     }
     else{
-        for(unsigned int i = 0; i < numOfLines; i++){
+        for(unsigned int i = 0; i < numOfLines && i < MAX_LINES; i++){
             bufferPtr[i] = malloc(sizeof(char) *  MAX_LINE_LENGTH);  //allocates memory for each string in the array, ch12.2
             fgets(bufferPtr[i], MAX_LINE_LENGTH, stdin);
         }
