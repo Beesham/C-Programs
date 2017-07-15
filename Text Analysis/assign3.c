@@ -130,12 +130,12 @@ int wordLengthAnalysis(char **bufferPtr, int numOfLines, int length){
     char *strTokenPtr;
     int count = 0;
     
-    strTokenPtr = strtok(copy, " "); //to get curly single quote hold alt + 0146 (num lock must be on)
+    strTokenPtr = strtok(copy, " \r\n"); //to get curly single quote hold alt + 0146 (num lock must be on)
     while(strTokenPtr != NULL){
         if(strlen(strTokenPtr) == length){
             count++;
         }
-        strTokenPtr = strtok(NULL, " ");
+        strTokenPtr = strtok(NULL, " \r\n");
     }
     
     return count;
