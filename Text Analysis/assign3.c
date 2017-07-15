@@ -240,6 +240,7 @@ unsigned long getText(char **bufferPtr){
         getchar();
     }
     else{
+        printf("\n%s %lu %s", "Analysing", numOfLines, "lines of text");
         for(unsigned int i = 0; i < numOfLines; i++){
             bufferPtr[i] = malloc(sizeof(char) *  MAX_LINE_LENGTH);  //allocates memory for each string in the array, ch12.2
             fgets(bufferPtr[i], MAX_LINE_LENGTH, stdin);
