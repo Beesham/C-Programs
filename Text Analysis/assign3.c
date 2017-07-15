@@ -30,16 +30,16 @@ int main(void){
     numOfLines = getText(bufferPtr);
     
     letterAnalysis(bufferPtr, numOfLines);
-    
+    wordAnalysis(bufferPtr, numOfLines);
     
     numOfWords = wordLengthAnalysis(bufferPtr, numOfLines, 2);
     const char *singleWord = "word";
     const char *pluralWord = "words";
     if(numOfWords <= 1){
-        printf("%3d %s %s %d", numOfWords, singleWord, "of length", 1);
+        printf("%3d %s %s %d", numOfWords, singleWord, "of length", 2);
     }
     else{
-        printf("%3d %s %s %d", numOfWords, pluralWord, "of length", 1);
+        printf("%3d %s %s %d", numOfWords, pluralWord, "of length", 2);
     }
 }
 
@@ -92,8 +92,6 @@ int wordLengthAnalysis(const char **bufferPtr, int numOfLines, int length){
     
     strcpy(copy, bufferPtr[0]); //copies first string in the buffer for subsequent concatenation
    
-               printf("%s", copy);
-
     //concatenates all the strings together 
     for(unsigned int i = 1; i < numOfLines; i++){
         strcat(copy, bufferPtr[i]);
@@ -104,7 +102,6 @@ int wordLengthAnalysis(const char **bufferPtr, int numOfLines, int length){
     
     strTokenPtr = strtok(copy, " :',?.!()’"); //to get curly single quote hold alt + 0146 (num lock must be on)
     while(strTokenPtr != NULL){
-        printf("%s\n", strTokenPtr);
         if(strlen(strTokenPtr) == length){
             count++;
         }
@@ -115,9 +112,43 @@ int wordLengthAnalysis(const char **bufferPtr, int numOfLines, int length){
 }
 
 /*
-
+    wordAnalysis: 
 */
 void wordAnalysis(const char **bufferPtr, int numOfLines){
+    char copy[MAX_LINES * MAX_LINE_LENGTH];
+    strcpy(copy, bufferPtr[0]); //copies first string in the buffer for subsequent concatenation
+   
+    //concatenates all the strings together 
+    for(unsigned int i = 1; i < numOfLines; i++){
+        strcat(copy, bufferPtr[i]);
+    }
+    
+    char *strTokenPtr;
+    char *strPtr;
+    int count = 0;
+    
+    
+    strTokenPtr = strtok(copy, " "); 
+    
+    while(strTokenPtr != NULL){
+        printf("%s ", strTokenPtr);
+        
+        strPtr = strstr(copy, strTokenPtr);
+        printf("%s ", strPtr);
+
+        
+        while(strPtr != NULL){
+            if(!strcmp(strTokenPtr, strPtr)){
+                count++;
+            }
+            strPtr = strstr(strPtr + strlen(strPtr) + 1, strTokenPtr);
+            //printf("%s ", strPtr);
+        }
+        
+                printf("%d\n", count);
+
+        strTokenPtr = strtok(NULL, " ");
+    }
     
 }
 
@@ -131,8 +162,9 @@ unsigned long getText(char **bufferPtr){
     unsigned long numOfLines = 0;
     
     printf("%s", "How many lines of text do you want to analyse: ");
-    scanf("%s", input);
-    input[2] = '\0';
+    //scanf("%s", input);
+    fgets(input, 3, stdin);
+    //input[2] = '\0';
         
     numOfLines = strtol(input, NULL, 10);
     getchar();
