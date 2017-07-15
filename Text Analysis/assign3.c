@@ -3,6 +3,9 @@
 	Date: 2017/07/19
 	Description: This program analyses text. It determines how many times words are used,
     letter repetition, and word length repetition
+    *Note: reading from a file, the file must begin with the number of lines to be read then follwed in a
+    new line the text. Reading more than 10 lines causes undefined behaviour (Seg. faults)
+    
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -222,18 +225,22 @@ unsigned long getText(char **bufferPtr){
     
     printf("%s", "How many lines of text do you want to analyse: ");
     fgets(input, MAX_SIZE_OF_INPUT, stdin);
-        
+    
     numOfLines = strtol(input, NULL, 10);
     getchar();
     
     if(numOfLines == 0) return 0;
+    else if (numOfLines > MAX_LINES){
+        puts("\nReading more than 10 lines is prohibited!");
+        numOfLines = 0;
+    }
     
     if (!numOfLines){
         puts("Invalid input! Exiting...");
         getchar();
     }
     else{
-        for(unsigned int i = 0; i < numOfLines && i < MAX_LINES; i++){
+        for(unsigned int i = 0; i < numOfLines; i++){
             bufferPtr[i] = malloc(sizeof(char) *  MAX_LINE_LENGTH);  //allocates memory for each string in the array, ch12.2
             fgets(bufferPtr[i], MAX_LINE_LENGTH, stdin);
         }
