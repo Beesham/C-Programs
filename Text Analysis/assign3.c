@@ -3,8 +3,6 @@
 	Date: 2017/07/19
 	Description: This program analyses text. It determines how many times words are used,
     letter repetition, and word length repetition
-    
-    *Note: if inputting from a file, the first line must have the number of lines to be analysed + 1
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,9 +14,9 @@
 #define MAX_WORD_LENGTH 20
 
 //prototypes
-void letterAnalysis(const char **bufferPtr, int numOfLines);
-int wordLengthAnalysis(const char **bufferPtr, int numOfLines, int length);
-void wordAnalysis(const char **bufferPtr, int numOfLines);
+void letterAnalysis(char **bufferPtr, int numOfLines);
+int wordLengthAnalysis(char **bufferPtr, int numOfLines, int length);
+void wordAnalysis(char **bufferPtr, int numOfLines);
 unsigned long getText(char **bufferPtr);
 
 //TODO: write cleanup function to free malloc
@@ -47,7 +45,7 @@ int main(void){
     letterAnalysis: analyses the number of occurences of each letter in the text
     input: an array of text (bufferPtr), the number of lines to be analysed (numOfLines)
 */
-void letterAnalysis(const char **bufferPtr, int numOfLines){
+void letterAnalysis(char **bufferPtr, int numOfLines){
     const char *alphabet = "abcdefghijklmnopqrstuvwxyz";
     
     char copy[MAX_LINES * MAX_LINE_LENGTH];
@@ -87,7 +85,7 @@ void letterAnalysis(const char **bufferPtr, int numOfLines){
     input: an array of text (bufferPtr), the number of lines to be analysed (numOfLines), the lenght of a word to look for (length)
     output: the amount of words (count) found having the specified length 
 */
-int wordLengthAnalysis(const char **bufferPtr, int numOfLines, int length){
+int wordLengthAnalysis(char **bufferPtr, int numOfLines, int length){
     char copy[MAX_LINES * MAX_LINE_LENGTH];
     
     strcpy(copy, bufferPtr[0]); //copies first string in the buffer for subsequent concatenation
@@ -114,7 +112,7 @@ int wordLengthAnalysis(const char **bufferPtr, int numOfLines, int length){
 /*
     wordAnalysis: 
 */
-void wordAnalysis(const char **bufferPtr, int numOfLines){
+void wordAnalysis(char **bufferPtr, int numOfLines){
     char copy[MAX_LINES * MAX_LINE_LENGTH];
     strcpy(copy, bufferPtr[0]); //copies first string in the buffer for subsequent concatenation
    
@@ -123,32 +121,94 @@ void wordAnalysis(const char **bufferPtr, int numOfLines){
         strcat(copy, bufferPtr[i]);
     }
     
+    printf("\n%s\n\n", copy);
+
+    char copy2[MAX_LINES * MAX_LINE_LENGTH];
+    strcpy(copy2, copy); 
+    
+    int count = 0;
     char *strTokenPtr;
-    char *strPtr;
+    strTokenPtr = strtok(copy2, " \r"); 
+    while(strTokenPtr != NULL){
+        count++;
+        strTokenPtr = strtok(NULL, " \r");
+    }
+    
+    strcpy(copy2, copy); 
+    char wordArray2D[count][MAX_WORD_LENGTH];
+    
+    strTokenPtr = strtok(copy2, " \r"); 
+    count = 0;
+    while(strTokenPtr != NULL){
+        strcpy(wordArray2D[count++], strTokenPtr);
+        //printf("\n%s\n", wordArray2D[count-1]);
+        strTokenPtr = strtok(NULL, " \r");
+    }
+    
+    strcpy(copy2, copy); 
+
+    char *copy2Ptr = copy;
+    
+    int newCount = 0;
+    for(int i = 0; i < count; i++){
+        //printf("\n%s\n", wordArray2D[i]);
+        for(int j = 0; j < count; j++){
+            if(!strcmp(wordArray2D[i], wordArray2D[j])){
+                newCount++;
+            }
+        }
+         
+        printf("\n%s: %d\n", wordArray2D[i], newCount);
+        newCount = 0;
+    }
+    
+    
+    /*
+    char *strTokenPtr;
+    char *copy2Ptr = copy2;
+    char *copyPtr = copy;
     int count = 0;
     
     
-    strTokenPtr = strtok(copy, " "); 
+    strTokenPtr = strtok(copy2, " "); 
+    //printf("strTokenPtr: %s %p\n", strTokenPtr, strTokenPtr);
+    //printf("copy: %s %p\n", copy, copy);
+
+    char *strFoundPtr;
+
     
     while(strTokenPtr != NULL){
-        printf("%s ", strTokenPtr);
-        
-        strPtr = strstr(copy, strTokenPtr);
-        printf("%s ", strPtr);
+        printf("%s\n", strTokenPtr);
+        printf("looking for %s in %s\n", strTokenPtr, copyPtr);
+        strFoundPtr = strstr(copyPtr, strTokenPtr);
+        if(strFoundPtr != NULL) printf("outer while strPtr: %s %p\n", strFoundPtr, strFoundPtr);
 
         
-        while(strPtr != NULL){
-            if(!strcmp(strTokenPtr, strPtr)){
+        while(strFoundPtr != NULL){
+            if(!strcmp(strTokenPtr, strFoundPtr)){
                 count++;
             }
-            strPtr = strstr(strPtr + strlen(strPtr) + 1, strTokenPtr);
-            //printf("%s ", strPtr);
+            
+            
+            //printf("1. strPtr inner while: %s %p\n", strPtr, strPtr);
+            //printf("before temp copy2 inner while: %s %p\n", copy2Ptr, copy2Ptr);
+
+            char *temp = copyPtr + (strlen(strFoundPtr) + 1);
+            copyPtr = temp;
+            //printf("after temp copy2 inner while: %s %p\n", copy2Ptr, copy2Ptr);
+            strFoundPtr = strstr(temp, strTokenPtr);
+            //printf("2. copy inner while: %s %p\n", temp, temp);
+            //printf("3. strPtr inner while: %s %p\n", strPtr, strPtr);
+            //if(strFoundPtr == NULL) printf("strPtr is NULL, meaning there is no more occurrences");
+            
         }
         
-                printf("%d\n", count);
-
+        printf("%d\n", count);
+        //copyPtr = &copy[0];
+        count = 0;
         strTokenPtr = strtok(NULL, " ");
     }
+    */
     
 }
 
@@ -162,9 +222,7 @@ unsigned long getText(char **bufferPtr){
     unsigned long numOfLines = 0;
     
     printf("%s", "How many lines of text do you want to analyse: ");
-    //scanf("%s", input);
     fgets(input, 3, stdin);
-    //input[2] = '\0';
         
     numOfLines = strtol(input, NULL, 10);
     getchar();
