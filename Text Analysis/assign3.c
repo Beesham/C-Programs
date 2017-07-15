@@ -227,20 +227,17 @@ unsigned long getText(char **bufferPtr){
     fgets(input, MAX_SIZE_OF_INPUT, stdin);
     
     numOfLines = strtol(input, NULL, 10);
-    getchar();
-    
-    if(numOfLines == 0) return 0;
-    else if (numOfLines > MAX_LINES){
-        puts("\nReading more than 10 lines is prohibited!");
-        numOfLines = 0;
-    }
-    
+      
     if (!numOfLines){
         puts("Invalid input! Exiting...");
-        getchar();
+    }
+    else if (numOfLines > MAX_LINES){
+        puts("\nReading more than 10 lines is prohibited! Exiting...");
+        numOfLines = 0;
     }
     else{
-        printf("\n%s %lu %s", "Analysing", numOfLines, "lines of text");
+        printf("\n%s %lu %s\n", "Analysing", numOfLines, "lines of text\nPlease begin entering text");
+                
         for(unsigned int i = 0; i < numOfLines; i++){
             bufferPtr[i] = malloc(sizeof(char) *  MAX_LINE_LENGTH);  //allocates memory for each string in the array, ch12.2
             fgets(bufferPtr[i], MAX_LINE_LENGTH, stdin);
