@@ -21,7 +21,7 @@ int main(void){
     char buffer2[] = "this is the second buffer";
     char buffer3[80];
     
-    printf("\n%s", "Please enter a sentece: ");
+    printf("\n%s", "Please enter a sentence: ");
     //scanf("%s", buffer3);   //only reads in a single word. To read a whole line fgets should be used
     fgets(buffer3, 80, stdin);
     
