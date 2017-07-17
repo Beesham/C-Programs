@@ -30,6 +30,7 @@ int main(void){
     puts("\n\nSorted previously generated matrix of values:");
     printArray(array, SIZE);
 
+   return 0; 
 }
 
 /*
@@ -45,7 +46,7 @@ void bubbleSortArray (int *A, size_t size){
     for(unsigned int pass = 0; pass < sizeOfArray - 1 && !isSwap; ++pass){
         //control loop for amount of comparisons per pass
         //traverses the array of integers
-        for(unsigned int i = 0; i < sizeOfArray; i++){                
+        for(unsigned int i = 0; i < sizeOfArray - pass - 1; i++){                
                 //checks if current num is less than next, if so then swap
                 if(*(A + i) <  *(A + i + 1)){
                     swap(A + i, A + i + 1);
