@@ -91,7 +91,7 @@ char* make1DArrayFrom2D(char *destination, char **source, int numOfLines){
 }
 
 /*
-    letterAnalysis: analyses the number of occurences of each letter in the text and prints the results
+    letterAnalysis: analyses the number of occurrences of each letter in the text and prints the results
     input: an array of text (bufferPtr), the number of lines to be analysed (numOfLines)
 */
 void letterAnalysis(char **bufferPtr, int numOfLines){
@@ -109,7 +109,7 @@ void letterAnalysis(char **bufferPtr, int numOfLines){
         }
     }
 
-    //searches for occurances of letters
+    //searches for occurrences of letters
     for(unsigned int j = 0; alphabet[j] != '\0'; j++){ 
         int count = 0;
         char *str = strchr(copy, alphabet[j]);;
@@ -139,7 +139,7 @@ int wordLengthAnalysis(char **bufferPtr, int numOfLines, int length){
     char *strTokenPtr;
     int count = 0;
     
-    strTokenPtr = strtok(copy, " \r\n"); //to get curly single quote hold alt + 0146 (num lock must be on)
+    strTokenPtr = strtok(copy, " \r\n");
     while(strTokenPtr != NULL){
         if(strlen(strTokenPtr) == length){
             count++;
@@ -165,7 +165,7 @@ void wordAnalysis(char **bufferPtr, int numOfLines){
     char copy[MAX_LINES * MAX_LINE_LENGTH];
     make1DArrayFrom2D(copy, bufferPtr, numOfLines);
         
-    //creates a second copy of the data because strtok modifies it
+    //creates a second copy of the data because strtok modifies its data being tokenized
     char copy2[MAX_LINES * MAX_LINE_LENGTH];
     strcpy(copy2, copy); 
     
@@ -182,6 +182,7 @@ void wordAnalysis(char **bufferPtr, int numOfLines){
     //re-copies the data to re-use variable and use unmodified data
     strcpy(copy2, copy); 
     
+    //create an array of size word count to store the tokenized words
     char wordArray2D[wordCount][MAX_WORD_LENGTH];
     
     //tokenizes and stores each word in a 2D word array
@@ -203,12 +204,11 @@ void wordAnalysis(char **bufferPtr, int numOfLines){
             }
         }
          
-        //printf("\n%s: %d\n", wordArray2D[i], occurrences);
         if(occurrences <= 1){
-            printf("\"%s\" %*s %d %s\n", wordArray2D[i], 20 - (int) strlen(wordArray2D[i]), "appeared", occurrences, singleWord);
+            printf("\"%s\" %*s %d %s\n", wordArray2D[i], MAX_WORD_LENGTH - (int) strlen(wordArray2D[i]), "appeared", occurrences, singleWord);
         }
         else{
-            printf("\"%s\" %*s %d %s\n",  wordArray2D[i], 20 - (int) strlen(wordArray2D[i]), "appeared", occurrences, pluralWord);
+            printf("\"%s\" %*s %d %s\n",  wordArray2D[i], MAX_WORD_LENGTH - (int) strlen(wordArray2D[i]), "appeared", occurrences, pluralWord);
         }
         occurrences = 0;
     }    
