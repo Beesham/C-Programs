@@ -1,0 +1,355 @@
+Script started on Tue, Jul 18, 2017  6:56:45 PM
+]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis
+[32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis[0m
+$ ls
+afile2.txt  assign3.c  assign3.txt  input.txt
+]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis
+[32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis[0m
+$ lsexit$ cat assign3.c$ exit[K$ cat assign3.c
+/*
+    Author: Beesham Sarendranauth, 104854956
+    Date: 2017/07/19
+    Description: This program analyses text. It determines how many times words are used,
+    letter repetition, and word length repetition
+    *Note: reading from a file, the file must begin with the number of lines to be read then follwed in a
+    new line the text. Reading more than 10 lines causes undefined behaviour (Seg. faults)
+    
+*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAX_LINES 10
+#define MAX_LINE_LENGTH 80
+#define MAX_WORD_LENGTH 20
+#define MAX_SIZE_OF_INPUT 3
+
+//prototypes
+void letterAnalysis(char **bufferPtr, int numOfLines);
+int wordLengthAnalysis(char **bufferPtr, int numOfLines, int length);
+void wordAnalysis(char **bufferPtr, int numOfLines);
+unsigned long getText(char **bufferPtr);
+char* make1DArrayFrom2D(char *destination, char **source, int numOfLines);
+void testWordLengthAnalysis(char **bufferPtr, int numOfLines, int wordLength);
+
+
+int main(void){
+    
+    char *bufferPtr[MAX_LINES];
+    unsigned int numOfLines = 0;
+    
+    numOfLines = getText(bufferPtr);
+    
+    if(numOfLines > 0){
+        letterAnalysis(bufferPtr, numOfLines);
+        puts("");
+
+        testWordLengthAnalysis(bufferPtr, numOfLines, 1);
+        testWordLengthAnalysis(bufferPtr, numOfLines, 2);
+        testWordLengthAnalysis(bufferPtr, numOfLines, 3);
+        testWordLengthAnalysis(bufferPtr, numOfLines, 4);
+        testWordLengthAnalysis(bufferPtr, numOfLines, 6);
+        testWordLengthAnalysis(bufferPtr, numOfLines, 7);
+        testWordLengthAnalysis(bufferPtr, numOfLines, 8);
+        testWordLengthAnalysis(bufferPtr, numOfLines, 9);
+        testWordLengthAnalysis(bufferPtr, numOfLines, 10);
+
+        wordAnalysis(bufferPtr, numOfLines);
+            
+        void cleanUp(char **bufferPtr, int numOfLines);
+        cleanUp(bufferPtr, numOfLines);
+    }
+}
+
+/*
+    testWordLengthAnalysis: performs tests on the word length analysis function and prints the results
+    input: an array of text (bufferPtr), the number of lines to be analysed (numOfLines), the length of a word to look for (length)
+*/
+void testWordLengthAnalysis(char **bufferPtr, int numOfLines, int wordLength){
+    
+    unsigned int numOfWords = 0;
+
+    numOfWords = wordLengthAnalysis(bufferPtr, numOfLines, wordLength);
+    const char *singleWord = "word";
+    const char *pluralWord = "words";
+    if(numOfWords <= 1){
+        printf("%3d %-5s %s %d\n", numOfWords, singleWord, "of length", wordLength);
+    }
+    else{
+        printf("%3d %-5s %s %d\n", numOfWords, pluralWord, "of length", wordLength);
+    }
+}
+
+/*
+    make1DArrayFrom2D: creates a 1D string array from a 2D string array using concatenation
+    input: an array to store the results in (destination), an array of text (source), the number of lines to be analysed (numOfLines)
+    output: the 1D string array containing the data
+*/
+char* make1DArrayFrom2D(char *destination, char **source, int numOfLines){
+    
+    strcpy(destination, source[0]); //copies first string in the buffer for subsequent concatenation
+   
+    //concatenates all the strings together 
+    for(unsigned int i = 1; i < numOfLines; i++){
+        strcat(destination, source[i]);
+    }
+    
+    return destination;
+}
+
+/*
+    letterAnalysis: analyses the number of occurrences of each letter in the text and prints the results
+    input: an array of text (bufferPtr), the number of lines to be analysed (numOfLines)
+*/
+void letterAnalysis(char **bufferPtr, int numOfLines){
+    puts("");
+    const char *alphabet = "abcdefghijklmnopqrstuvwxyz";
+    
+    //makes a copy of the original data to avoid data destruction
+    char copy[MAX_LINES * MAX_LINE_LENGTH];   
+    make1DArrayFrom2D(copy, bufferPtr, numOfLines);
+
+    //converts all convertable characters to lowercase
+    for(unsigned int j = 0; (copy[j]) != '\0'; j++){
+        if(isalpha((copy[j]))){
+            (copy[j]) = tolower((copy[j]));
+        }
+    }
+
+    //searches for occurrences of letters
+    for(unsigned int j = 0; alphabet[j] != '\0'; j++){ 
+        int count = 0;
+        char *str = strchr(copy, alphabet[j]);;
+        while(str != NULL){
+            count++;
+            str = strchr(str+1, alphabet[j]);
+        }
+        
+        if(j % 5 == 0) puts("");
+        printf("%c : %3d   ", alphabet[j], count);
+    }
+    
+    puts("");
+}
+
+/*
+    wordLengthAnalysis: analyses the amount of words that are of a certain length
+    input: an array of text (bufferPtr), the number of lines to be analysed (numOfLines), the length of a word to look for (length)
+    output: the amount of words (count) found having the specified length 
+*/
+int wordLengthAnalysis(char **bufferPtr, int numOfLines, int length){
+    
+    //makes a copy of the original data to avoid data destruction
+    char copy[MAX_LINES * MAX_LINE_LENGTH];
+    make1DArrayFrom2D(copy, bufferPtr, numOfLines);
+    
+    char *strTokenPtr;
+    int count = 0;
+    
+    strTokenPtr = strtok(copy, " \r\n");
+    while(strTokenPtr != NULL){
+        if(strlen(strTokenPtr) == length){
+            count++;
+        }
+        strTokenPtr = strtok(NULL, " \r\n");
+    }
+    
+    return count;
+}
+
+/*
+    wordAnalysis: analyses the repetition of words in a given text and prints the results
+    input: an array of text (bufferPtr), the number of lines to be analysed (numOfLines)
+*/
+void wordAnalysis(char **bufferPtr, int numOfLines){
+    puts("");
+    
+    //used for printing results
+    const char *singleWord = "time";
+    const char *pluralWord = "times";
+
+    //makes a copy of the original data to avoid data destruction
+    char copy[MAX_LINES * MAX_LINE_LENGTH];
+    make1DArrayFrom2D(copy, bufferPtr, numOfLines);
+        
+    //creates a second copy of the data because strtok modifies its data being tokenized
+    char copy2[MAX_LINES * MAX_LINE_LENGTH];
+    strcpy(copy2, copy); 
+    
+    char *strTokenPtr;
+    int wordCount = 0;
+    
+    //tokenizes the 1D string to count the words
+    strTokenPtr = strtok(copy2, " \r\n"); 
+    while(strTokenPtr != NULL){
+        wordCount++;
+        strTokenPtr = strtok(NULL, " \r\n");
+    }
+    
+    //re-copies the data to re-use variable and use unmodified data
+    strcpy(copy2, copy); 
+    
+    //create an array of size word count to store the tokenized words
+    char wordArray2D[wordCount][MAX_WORD_LENGTH];
+    
+    //tokenizes and stores each word in a 2D word array
+    strTokenPtr = strtok(copy2, " \r\n"); 
+    int count = 0;
+    while(strTokenPtr != NULL){
+        strcpy(wordArray2D[count++], strTokenPtr);
+        strTokenPtr = strtok(NULL, " \r\n");
+    }
+    
+    strcpy(copy2, copy); 
+    
+    //looks for and compares words for recurring occurrences in the 2D array
+    int occurrences = 0;
+    for(int i = 0; i < wordCount; i++){
+        for(int j = 0; j < wordCount; j++){
+            if(!strcmp(wordArray2D[i], wordArray2D[j])){
+                occurrences++;
+            }
+        }
+         
+        if(occurrences <= 1){
+            printf("\"%s\" %*s %d %s\n", wordArray2D[i], MAX_WORD_LENGTH - (int) strlen(wordArray2D[i]), "appeared", occurrences, singleWord);
+        }
+        else{
+            printf("\"%s\" %*s %d %s\n",  wordArray2D[i], MAX_WORD_LENGTH - (int) strlen(wordArray2D[i]), "appeared", occurrences, pluralWord);
+        }
+        occurrences = 0;
+    }    
+}
+
+/*
+    getText: reads N amount of text input from the user
+    input: the string array the text is to be stored in (bufferPtr)
+    output: the number of lines to be analysed
+*/
+unsigned long getText(char **bufferPtr){
+    char input[MAX_SIZE_OF_INPUT];
+    unsigned long numOfLines = 0;
+    
+    printf("%s", "How many lines of text do you want to analyse: ");
+    fgets(input, MAX_SIZE_OF_INPUT, stdin);
+    
+    numOfLines = strtol(input, NULL, 10);
+      
+    if (!numOfLines){
+        puts("Invalid input! Exiting...");
+    }
+    else if (numOfLines > MAX_LINES){
+        puts("\nReading more than 10 lines is prohibited! Exiting...");
+        numOfLines = 0;
+    }
+    else{
+        printf("\n%s %lu %s", "Analysing", numOfLines, "lines of text\nPlease hit enter to begin entering text");
+        getchar();
+
+        for(unsigned int i = 0; i < numOfLines; i++){
+            bufferPtr[i] = malloc(sizeof(char) *  MAX_LINE_LENGTH);  //allocates memory for each string in the array, ch12.2
+            fgets(bufferPtr[i], MAX_LINE_LENGTH, stdin);
+        }
+    }
+    
+    return numOfLines;
+}
+
+/*
+    cleanUp: free the memory allocated using malloc
+    input: an array of text (bufferPtr), the number of lines to be analysed (numOfLines)
+*/
+void cleanUp(char **bufferPtr, int numOfLines){
+    if(bufferPtr != NULL){
+        for(unsigned int i = 0; i < numOfLines; i++){
+                free(bufferPtr[i]); //frees the allocated memory for each string in the array, ch12.2
+        }
+    }
+}]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis
+[32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis[0m
+$ cat input.txt
+4
+To be, or not to be? That is the question:
+Whether ’tis nobler in the mind to suffer
+The slings and arrows of outrageous fortune,
+Or to take arms against a sea of troubles,]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis
+[32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis[0m
+$ cc assign3.c
+]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis
+[32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis[0m
+$ ls
+a.exe  afile2.txt  assign3.c  assign3.txt  input.txt
+]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis
+[32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis[0m
+$ ./a.exe < input.txt
+How many lines of text do you want to analyse: 
+Analysing 4 lines of text
+Please hit enter to begin entering text
+
+a :  10   b :   4   c :   0   d :   2   e :  15   
+f :   5   g :   3   h :   6   i :   7   j :   0   
+k :   1   l :   3   m :   2   n :   9   o :  16   
+p :   0   q :   1   r :  11   s :  12   t :  18   
+u :   6   v :   0   w :   2   x :   0   y :   0   
+z :   0   
+
+  1 word  of length 1
+ 10 words of length 2
+  8 words of length 3
+  5 words of length 4
+  4 words of length 6
+  2 words of length 7
+  1 word  of length 8
+  2 words of length 9
+  1 word  of length 10
+
+"To"           appeared 1 time
+"be,"          appeared 1 time
+"or"           appeared 1 time
+"not"          appeared 1 time
+"to"           appeared 3 times
+"be?"          appeared 1 time
+"That"         appeared 1 time
+"is"           appeared 1 time
+"the"          appeared 2 times
+"question:"    appeared 1 time
+"Whether"      appeared 1 time
+"’tis"         appeared 1 time
+"nobler"       appeared 1 time
+"in"           appeared 1 time
+"the"          appeared 2 times
+"mind"         appeared 1 time
+"to"           appeared 3 times
+"suffer"       appeared 1 time
+"The"          appeared 1 time
+"slings"       appeared 1 time
+"and"          appeared 1 time
+"arrows"       appeared 1 time
+"of"           appeared 2 times
+"outrageous"   appeared 1 time
+"fortune,"     appeared 1 time
+"Or"           appeared 1 time
+"to"           appeared 3 times
+"take"         appeared 1 time
+"arms"         appeared 1 time
+"against"      appeared 1 time
+"a"            appeared 1 time
+"sea"          appeared 1 time
+"of"           appeared 2 times
+"troubles,"    appeared 1 time
+]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis
+[32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis[0m
+$ ls -l
+total 101
+-rwxr-xr-x+ 1 Beesham Beesham 69681 Jul 18 18:57 a.exe
+-rwx---r-x+ 1 Beesham Beesham  1486 Jul 15 17:51 afile2.txt
+-rwx------+ 1 Beesham Beesham  9078 Jul 18 18:51 assign3.c
+-rw-r--r--+ 1 Beesham Beesham     0 Jul 18 18:56 assign3.txt
+-rwx---r-x+ 1 Beesham Beesham   178 Jul 15 17:51 input.txt
+]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis
+[32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis[0m
+$ exit
+exit
+
+Script done on Tue, Jul 18, 2017  6:58:03 PM

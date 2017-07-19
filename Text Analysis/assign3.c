@@ -194,23 +194,34 @@ void wordAnalysis(char **bufferPtr, int numOfLines){
     }
     
     strcpy(copy2, copy); 
-    
+        
     //looks for and compares words for recurring occurrences in the 2D array
     int occurrences = 0;
-    for(int i = 0; i < wordCount; i++){
-        for(int j = 0; j < wordCount; j++){
-            if(!strcmp(wordArray2D[i], wordArray2D[j])){
-                occurrences++;
+    
+    for(int i = 0; i < wordCount; i++){ 
+    
+        if(wordArray2D[i][0] != '\0'){  //check if our word is NULL or was deleted
+        
+            printf("\"%s\" ",  wordArray2D[i]); //prints the word we are counting
+            
+            for(int j = 0; j < wordCount; j++){
+                if(!strcmp(wordArray2D[i], wordArray2D[j])){
+                    //if we counted the word already, we can count and remove(by setting the location to 0) subsequent occurrences
+                    if(occurrences >= 1){
+                        memset(wordArray2D[j], '\0', sizeof(wordArray2D[j]));
+                    }
+                    occurrences++;
+                }              
+            }         
+             
+            if(occurrences <= 1){
+                printf("%*s %d %s\n", MAX_WORD_LENGTH - (int) strlen(wordArray2D[i]), "appeared", occurrences, singleWord);
             }
+            else{
+                printf("%*s %d %s\n", MAX_WORD_LENGTH - (int) strlen(wordArray2D[i]), "appeared", occurrences, pluralWord);
+            }
+            occurrences = 0;
         }
-         
-        if(occurrences <= 1){
-            printf("\"%s\" %*s %d %s\n", wordArray2D[i], MAX_WORD_LENGTH - (int) strlen(wordArray2D[i]), "appeared", occurrences, singleWord);
-        }
-        else{
-            printf("\"%s\" %*s %d %s\n",  wordArray2D[i], MAX_WORD_LENGTH - (int) strlen(wordArray2D[i]), "appeared", occurrences, pluralWord);
-        }
-        occurrences = 0;
     }    
 }
 
