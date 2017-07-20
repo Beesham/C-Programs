@@ -1,11 +1,7 @@
-Script started on Tue, Jul 18, 2017  6:56:45 PM
+Script started on Wed, Jul 19, 2017  6:52:47 PM
 ]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis
 [32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis[0m
-$ ls
-afile2.txt  assign3.c  assign3.txt  input.txt
-]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis
-[32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis[0m
-$ lsexit$ cat assign3.c$ exit[K$ cat assign3.c
+$ cat assign3.c
 /*
     Author: Beesham Sarendranauth, 104854956
     Date: 2017/07/19
@@ -202,23 +198,34 @@ void wordAnalysis(char **bufferPtr, int numOfLines){
     }
     
     strcpy(copy2, copy); 
-    
+        
     //looks for and compares words for recurring occurrences in the 2D array
     int occurrences = 0;
-    for(int i = 0; i < wordCount; i++){
-        for(int j = 0; j < wordCount; j++){
-            if(!strcmp(wordArray2D[i], wordArray2D[j])){
-                occurrences++;
+    
+    for(int i = 0; i < wordCount; i++){ 
+    
+        if(wordArray2D[i][0] != '\0'){  //check if our word is NULL or was deleted
+        
+            printf("\"%s\" ",  wordArray2D[i]); //prints the word we are counting
+            
+            for(int j = 0; j < wordCount; j++){
+                if(!strcmp(wordArray2D[i], wordArray2D[j])){
+                    //if we counted the word already, we can count and remove(by setting the location to 0) subsequent occurrences
+                    if(occurrences >= 1){
+                        memset(wordArray2D[j], '\0', sizeof(wordArray2D[j]));
+                    }
+                    occurrences++;
+                }              
+            }         
+             
+            if(occurrences <= 1){
+                printf("%*s %d %s\n", MAX_WORD_LENGTH - (int) strlen(wordArray2D[i]), "appeared", occurrences, singleWord);
             }
+            else{
+                printf("%*s %d %s\n", MAX_WORD_LENGTH - (int) strlen(wordArray2D[i]), "appeared", occurrences, pluralWord);
+            }
+            occurrences = 0;
         }
-         
-        if(occurrences <= 1){
-            printf("\"%s\" %*s %d %s\n", wordArray2D[i], MAX_WORD_LENGTH - (int) strlen(wordArray2D[i]), "appeared", occurrences, singleWord);
-        }
-        else{
-            printf("\"%s\" %*s %d %s\n",  wordArray2D[i], MAX_WORD_LENGTH - (int) strlen(wordArray2D[i]), "appeared", occurrences, pluralWord);
-        }
-        occurrences = 0;
     }    
 }
 
@@ -275,11 +282,7 @@ Whether ’tis nobler in the mind to suffer
 The slings and arrows of outrageous fortune,
 Or to take arms against a sea of troubles,]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis
 [32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis[0m
-$ cc assign3.c
-]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis
-[32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis[0m
-$ ls
-a.exe  afile2.txt  assign3.c  assign3.txt  input.txt
+$ cc assign. 3.c
 ]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis
 [32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis[0m
 $ ./a.exe < input.txt
@@ -318,9 +321,7 @@ z :   0
 "’tis"         appeared 1 time
 "nobler"       appeared 1 time
 "in"           appeared 1 time
-"the"          appeared 2 times
 "mind"         appeared 1 time
-"to"           appeared 3 times
 "suffer"       appeared 1 time
 "The"          appeared 1 time
 "slings"       appeared 1 time
@@ -330,26 +331,24 @@ z :   0
 "outrageous"   appeared 1 time
 "fortune,"     appeared 1 time
 "Or"           appeared 1 time
-"to"           appeared 3 times
 "take"         appeared 1 time
 "arms"         appeared 1 time
 "against"      appeared 1 time
 "a"            appeared 1 time
 "sea"          appeared 1 time
-"of"           appeared 2 times
 "troubles,"    appeared 1 time
 ]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis
 [32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis[0m
 $ ls -l
-total 101
--rwxr-xr-x+ 1 Beesham Beesham 69681 Jul 18 18:57 a.exe
+total 89
+-rwxr-xr-x+ 1 Beesham Beesham 69874 Jul 19 18:53 a.exe
 -rwx---r-x+ 1 Beesham Beesham  1486 Jul 15 17:51 afile2.txt
--rwx------+ 1 Beesham Beesham  9078 Jul 18 18:51 assign3.c
--rw-r--r--+ 1 Beesham Beesham     0 Jul 18 18:56 assign3.txt
+-rwx------+ 1 Beesham Beesham  9602 Jul 19 18:37 assign3.c
+-rw-r--r--+ 1 Beesham Beesham     0 Jul 19 18:52 assign3.txt
 -rwx---r-x+ 1 Beesham Beesham   178 Jul 15 17:51 input.txt
 ]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis
 [32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Text Analysis[0m
 $ exit
 exit
 
-Script done on Tue, Jul 18, 2017  6:58:03 PM
+Script done on Wed, Jul 19, 2017  6:53:44 PM
