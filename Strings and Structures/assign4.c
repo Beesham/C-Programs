@@ -65,43 +65,79 @@ CourseInfo* processCourseRecord(char *record, CourseInfo *courseInfo){
     
     int recordLength = strlen(record);
     char *strTokPtr;
-    int count = 1;
+    int index = 1;
     
     strTokPtr = strtok(record, ",");
     
     while(strTokPtr != NULL){
-                printf("%s", strTokPtr);
+                printf("token: %s\n", strTokPtr);
         
-        switch(count){
+        switch(index){
             
             case COURSENAMEINDEX:{
-               convertToUppercase(strTokPtr);
-               strcpy(courseInfo->courseName, strTokPtr);
+                convertToUppercase(strTokPtr);
+                strcpy(courseInfo->courseName, strTokPtr);
             }
             break;
             
-            case FACULTYINDEX:{}
+            case FACULTYINDEX:{
+                sprintf(courseInfo->courseCode, "%02d", atoi(strTokPtr));
+            }
             break;
             
-            case SUBJECTINDEX:{}
+            case SUBJECTINDEX:{
+                char subjectCode[3];
+                               
+                sprintf(subjectCode, "%02d", atoi(strTokPtr));
+
+                strcat(courseInfo->courseCode, subjectCode);
+            }
             break;
             
-            case LEVELINDEX:{}
+            case LEVELINDEX:{
+                strcat(courseInfo->courseCode, "-");
+
+                char levelCode[4];
+                               
+                sprintf(levelCode, "%03d", atoi(strTokPtr));
+
+                strcat(courseInfo->courseCode, levelCode);
+            }
             break;
             
-            case SECTIONINDEX:{}
+            case SECTIONINDEX:{
+                strcat(courseInfo->courseCode, "-");
+
+                char sectionCode[3];
+                               
+                sprintf(sectionCode, "%02d", atoi(strTokPtr));
+
+                strcat(courseInfo->courseCode, sectionCode);
+                printf("course code : %s\n", courseInfo->courseCode);   
+            }
             break;
             
-            case SEMESTERINDEX:{}
+            case SEMESTERINDEX:{
+                convertToUppercase(strTokPtr);
+                sprintf(courseInfo->term, "%s", strTokPtr);
+            }
             break;
             
-            case YEARINDEX:{}
+            case YEARINDEX:{
+                int year = atoi(strTokPtr);
+                char temp[4];
+                
+                sprintf(temp, "%d", year);
+
+                strcat(courseInfo->term, temp);
+                printf("term code : %s\n", courseInfo->term);   
+
+            }
             break;
         }
         
-        count++;
+        index++;
         
-        //strcpy(courseInfo->courseName, strTokPtr);
         strTokPtr = strtok(NULL, ",");
     }
     
