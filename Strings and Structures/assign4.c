@@ -41,12 +41,12 @@ typedef struct {
 //prototypes
 int loadCourseInfo(CourseInfo *courses);
 void addCourseInfo(CourseInfo *courses, int *courseCount, char *record);
-int searchCourseInfo(CourseInfo *courses, int courseCount, int courseId, char *courseName);
-void displayCourseInfo(CourseInfo *courses, size_t courseCount);
+int searchCourseInfo(const CourseInfo *courses, size_t courseCount, int courseId, char *courseName);
+void displayCourseInfo(const CourseInfo *courses, size_t courseCount);
 void processCourseRecord(char *record, CourseInfo *courseInfo);
 void convertToUppercase(char *string);
-int binarySearch(CourseInfo *courses, int courseCount, int searchKey);
-int linearSearch(CourseInfo *courses, int courseCount, searchFlag flag, char *searchKey);
+int binarySearch(const CourseInfo *courses, size_t courseCount, int searchKey);
+int linearSearch(const CourseInfo *courses, size_t courseCount, searchFlag flag, char *searchKey);
 
 static int mCourseId = 1;
 
@@ -78,16 +78,23 @@ int main(void){
     
     puts("");
     
-    puts("SEARCH FOR COURSE WITH ID 1 & 4:");
+    puts("SEARCH FOR COURSE WITH ID 1 & 4 & 11:");
     searchCourseInfo(courses, courseCount, 1, NULL);
     searchCourseInfo(courses, courseCount, 4, NULL);
+    searchCourseInfo(courses, courseCount, 11, NULL);
+
+    
 
     puts("");
 
-    puts("SEARCH FOR COURSE WITH NAME 'newcourse':");
+    puts("SEARCH FOR COURSE WITH NAME 'newcourse' & 'math':");
     char courseName[MAX_COURSE_NAME_LENGTH];
     strcpy(courseName,"newcourse");
     searchCourseInfo(courses, courseCount, 0, courseName);
+    
+    char courseName2[MAX_COURSE_NAME_LENGTH];
+    strcpy(courseName2,"math");
+    searchCourseInfo(courses, courseCount, 0, courseName2);
     
     return 0;
 }
@@ -203,7 +210,7 @@ void convertToUppercase(char *string){
     input: the array to be added to, the number of courses existing (courseCount), the course data to be added (record)
 */
 void addCourseInfo(CourseInfo *courses, int *courseCount, char *record){
-    int validateData(CourseInfo *courses, int courseCount, CourseInfo courseInfo);
+    int validateData(const CourseInfo *courses, size_t courseCount, CourseInfo courseInfo);
 
     int index = *courseCount;
     CourseInfo newCourseInfo = {0};
@@ -222,7 +229,7 @@ void addCourseInfo(CourseInfo *courses, int *courseCount, char *record){
     input: the array to be searched (courses), the size of array (courseCount), the searchKey (courseId or courseName)
     output: if found key 1, or -1 if not found
 */
-int searchCourseInfo(CourseInfo *courses, int courseCount, int courseId, char *courseName){
+int searchCourseInfo(const CourseInfo *courses, size_t courseCount, int courseId, char *courseName){
     
     int resultIndex;
     
@@ -237,6 +244,7 @@ int searchCourseInfo(CourseInfo *courses, int courseCount, int courseId, char *c
             displayCourseInfo(courses, 1);
             isFound = FOUND;
         }
+        else printf("%s %d %s\n", "COURSE ID:", courseId, "WAS NOT FOUND");
     }
     //search for course name
     else if(courseName != NULL){
@@ -247,6 +255,8 @@ int searchCourseInfo(CourseInfo *courses, int courseCount, int courseId, char *c
             displayCourseInfo(courses, 1);
             isFound = FOUND;
         }
+        else printf("%s %s %s\n", "COURSE NAME:", courseName, "WAS NOT FOUND");
+
     }
     
     return isFound;
@@ -257,7 +267,7 @@ int searchCourseInfo(CourseInfo *courses, int courseCount, int courseId, char *c
     input: the array to be searched (courses), the size of array (courseCount), the struct to validate (courseInfo)
     output: 1 if found, else -1
 */
-int validateData(CourseInfo *courses, int courseCount, CourseInfo courseInfo){
+int validateData(const CourseInfo *courses, size_t courseCount, CourseInfo courseInfo){
     
     if(linearSearch(courses, courseCount, COURSE_CODE_FLAG, courseInfo.courseCode) != NOT_FOUND) return FOUND;
     if(binarySearch(courses, courseCount, courseInfo.courseID) != NOT_FOUND) return FOUND;
@@ -271,7 +281,7 @@ int validateData(CourseInfo *courses, int courseCount, CourseInfo courseInfo){
     what is being searched for, the searchKey (searchKey)
     output: the index of the found key in the array, or -1 if not found
 */
-int linearSearch(CourseInfo *courses, int courseCount, searchFlag flag, char *searchKey){
+int linearSearch(const CourseInfo *courses, size_t courseCount, searchFlag flag, char *searchKey){
 
     switch(flag){
         case NAME_FLAG:{
@@ -297,7 +307,7 @@ int linearSearch(CourseInfo *courses, int courseCount, searchFlag flag, char *se
     input: the array to be searched (courses), the size of array (courseCount), the searchKey (searchKey)
     output: the index of the found key in the array, or -1 if not found
 */
-int binarySearch(CourseInfo *courses, int courseCount, int searchKey){
+int binarySearch(const CourseInfo *courses, size_t courseCount, int searchKey){
     int low = 0, high = courseCount - 1;
     
     while(low <= high){
@@ -323,7 +333,7 @@ int binarySearch(CourseInfo *courses, int courseCount, int searchKey){
     displayCourseInfo: displays the all courses information 
     input: an array of courses to display (courses), the number of courses to display (courseCount)
 */
-void displayCourseInfo(CourseInfo *courses, size_t courseCount){
+void displayCourseInfo(const CourseInfo *courses, size_t courseCount){
     printf("%-5s%-20s%-20s%-8s\n", "ID","Name","Code","Term");
     for(size_t i = 0; i < courseCount; i++){
         printf("%-5d%-20s%-20s%-8s\n", courses[i].courseID, courses[i].courseName, courses[i].courseCode, courses[i].term);
