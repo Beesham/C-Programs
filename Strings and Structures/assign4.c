@@ -56,26 +56,38 @@ int main(void){
     CourseInfo courses[MAX_COURSES];
     int courseCount = 0;
     
+    puts("LOADED COURSES:");
     courseCount = loadCourseInfo(courses);
     displayCourseInfo(courses, courseCount);
     
-    char str[50];
-    strcpy(str,"newCOurse,03,60,141,01,F,2018");
-    addCourseInfo(courses, &courseCount, str);
+    puts("");
+    
+    puts("ADD NEW COURSE:");
+    char newCourseRecord[MAX_COURSE_NAME_LENGTH];
+    strcpy(newCourseRecord,"newCOurse,3,60,241,01,F,2018");
+    addCourseInfo(courses, &courseCount, newCourseRecord);
     displayCourseInfo(courses, courseCount);
     
-    char str2[50];
-    strcpy(str2,"newCOurse");
-
-    //searchCourseInfo(courses, courseCount, 1, NULL);
-    //searchCourseInfo(courses, courseCount, 2, NULL);
-    //searchCourseInfo(courses, courseCount, 3, NULL);
+    puts("");
+    
+    puts("ADD NEW COURSE WITH SAME COURSE CODE:");
+    char newCourseRecord2[MAX_COURSE_NAME_LENGTH];
+    strcpy(newCourseRecord2,"newCOurse2,03,60,241,01,F,2018");
+    addCourseInfo(courses, &courseCount, newCourseRecord2);
+    displayCourseInfo(courses, courseCount);
+    
+    puts("");
+    
+    puts("SEARCH FOR COURSE WITH ID 1 & 4:");
+    searchCourseInfo(courses, courseCount, 1, NULL);
     searchCourseInfo(courses, courseCount, 4, NULL);
 
-    searchCourseInfo(courses, courseCount, 0, str2);
+    puts("");
 
-
-
+    puts("SEARCH FOR COURSE WITH NAME 'newcourse':");
+    char courseName[MAX_COURSE_NAME_LENGTH];
+    strcpy(courseName,"newcourse");
+    searchCourseInfo(courses, courseCount, 0, courseName);
     
     return 0;
 }
@@ -202,7 +214,7 @@ void addCourseInfo(CourseInfo *courses, int *courseCount, char *record){
         courses[index] = newCourseInfo;
         (*courseCount)++;
     }
-    else puts("UNABLE TO ADD : COURSE DUPLICATE");
+    else printf("%s %s\n","*DUPLICATE COURSE ID OR CODE* UNABLE TO ADD:", newCourseInfo.courseName);
 }
 
 /*
