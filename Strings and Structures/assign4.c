@@ -170,7 +170,8 @@ void convertToUppercase(char *string){
 }
 
 /*
-
+    addCourseInfo: adds a new course to the courses array
+    input: the array to be added to, the number of courses existing (courseCount), the course data to be added (record)
 */
 void addCourseInfo(CourseInfo *courses, int *courseCount, char *record){
     int index = *courseCount;
