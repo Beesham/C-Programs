@@ -32,24 +32,31 @@ typedef struct {
 
 //prototypes
 int loadCourseInfo(CourseInfo *courses);
-void addCourseInfo();
+void addCourseInfo(CourseInfo *courses, int *courseCount);
 void searchCourseInfo();
-void displayCourseInfo();
+void displayCourseInfo(CourseInfo *courses, size_t courseCount);
 void processCourseRecord(char *record, CourseInfo *courseInfo);
 void convertToUppercase(char *string);
+
+static int mCourseId = 1;
+
 
 int main(void){
     
     CourseInfo courses[MAX_COURSES];
-    int courseCount;
+    int courseCount = 0;
     
     courseCount = loadCourseInfo(courses);
     displayCourseInfo(courses, courseCount);
+    //addCourseInfo(courses, &courseCount);
+    
+    return 0;
 }
 
 /*
     loadCourseInfo: reads data relating to courses from a csv and stores it in an array of CourseInfo
     input: the array to store the data (courses)
+    output: the number of records read/ number of courses (courseCount)
 */
 int loadCourseInfo(CourseInfo *courses){
         
@@ -73,8 +80,6 @@ void processCourseRecord(char *record, CourseInfo *courseInfo){
     
     char *strTokPtr;
     int index = 1;  //the index of data to be processed
-    
-    static int courseId = 1;
     
     strTokPtr = strtok(record, ",");
     
@@ -147,7 +152,7 @@ void processCourseRecord(char *record, CourseInfo *courseInfo){
         
         strTokPtr = strtok(NULL, ",");
     }
-    courseInfo->courseID = courseId++;
+    courseInfo->courseID = mCourseId++;
 }
 
 void convertToUppercase(char *string){
@@ -160,8 +165,12 @@ void convertToUppercase(char *string){
 /*
 
 */
-void addCourseInfo(){
-    
+void addCourseInfo(CourseInfo *courses, int *courseCount){
+    int index = (*courseCount) - 1;
+    printf("%s", "Please enter course info as [Name, Code(XXXX-XXX-XX), Term(TYYYY)]");
+    scanf("%s %s %s", courses[index].courseName, courses[index].courseCode, courses[index].term);
+    courses[index].courseID = mCourseId++;
+    (*courseCount)++;
 }
 
 /*
