@@ -9,6 +9,9 @@
 #include <ctype.h>
 #include <string.h>
 
+#define FOUND 1
+#define NOT_FOUND -1
+
 #define MAX_LINE_LENGTH 256
 #define MAX_COURSES 10
 #define MAX_COURSE_NAME_LENGTH 50
@@ -33,7 +36,7 @@ typedef struct {
 //prototypes
 int loadCourseInfo(CourseInfo *courses);
 void addCourseInfo(CourseInfo *courses, int *courseCount, char *record);
-void searchCourseInfo(CourseInfo *courses, int courseCount, int courseId, char *courseName);
+int searchCourseInfo(CourseInfo *courses, int courseCount, int courseId, char *courseName);
 void displayCourseInfo(CourseInfo *courses, size_t courseCount);
 void processCourseRecord(char *record, CourseInfo *courseInfo);
 void convertToUppercase(char *string);
@@ -80,9 +83,7 @@ int loadCourseInfo(CourseInfo *courses){
     int courseCount = 0;
     
     while(fgets(courseRecordBuffer, MAX_LINE_LENGTH, stdin) != NULL){
-        CourseInfo ci = {0};
-        processCourseRecord(courseRecordBuffer, &ci);
-        courses[courseCount++] = ci;
+        addCourseInfo(courses, &courseCount, courseRecordBuffer);
     }
     
     return courseCount;
@@ -192,33 +193,47 @@ void addCourseInfo(CourseInfo *courses, int *courseCount, char *record){
 /*
     searchCourseInfo: searches through an array for a value, only one value can be searched at a time, either name or id
     input: the array to be searched (courses), the size of array (courseCount), the searchKey (courseId or courseName)
-    output: the index of the found key in the array, or -1 if not found
+    output: if found key 1, or -1 if not found
 */
-void searchCourseInfo(CourseInfo *courses, int courseCount, int courseId, char *courseName){
+int searchCourseInfo(CourseInfo *courses, int courseCount, int courseId, char *courseName){
     
     int binarySearch(CourseInfo *courses, int courseCount, int searchKey);
     int linearSearch(CourseInfo *courses, int courseCount, char *searchKey);
 
     int resultIndex;
     
+    int isFound = NOT_FOUND;
+    
     //search for course id
     if(courseId != 0){
         
         resultIndex = binarySearch(courses, courseCount, courseId);
-        if(resultIndex != -1){
+        if(resultIndex != NOT_FOUND){
             courses += resultIndex;
             displayCourseInfo(courses, 1);
+            isFound = FOUND;
         }
     }
     //search for course name
     else if(courseName != NULL){
 
         resultIndex = linearSearch(courses, courseCount, courseName);
-        if(resultIndex != -1){
+        if(resultIndex != NOT_FOUND){
             courses += resultIndex;
             displayCourseInfo(courses, 1);
+            isFound = FOUND;
         }
     }
+    
+    return isFound;
+}
+
+int validateData(CourseInfo *courses, int courseCount){
+    
+    //if(searchCourseInfo(courses, courseCount, 3, NULL);
+
+    
+    return 1;
 }
 
 /*
@@ -234,7 +249,7 @@ int linearSearch(CourseInfo *courses, int courseCount, char *searchKey){
         if (!strcmp(searchKey, courses[i].courseName)) return i;
     }
     
-    return -1;
+    return NOT_FOUND;
 }
 
 /*
@@ -261,7 +276,7 @@ int binarySearch(CourseInfo *courses, int courseCount, int searchKey){
         }
     }
     
-    return -1;
+    return NOT_FOUND;
 }
 
 /*
