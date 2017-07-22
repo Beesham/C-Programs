@@ -51,8 +51,6 @@ int linearSearch(CourseInfo *courses, int courseCount, searchFlag flag, char *se
 static int mCourseId = 1;
 
 
-//TODO: add unique check for courseID and courseCode
-
 int main(void){
     
     CourseInfo courses[MAX_COURSES];
@@ -60,13 +58,11 @@ int main(void){
     
     courseCount = loadCourseInfo(courses);
     displayCourseInfo(courses, courseCount);
-    printf("courseCOunt: %d\n", courseCount);
     
     char str[50];
     strcpy(str,"newCOurse,03,60,141,01,F,2018");
     addCourseInfo(courses, &courseCount, str);
     displayCourseInfo(courses, courseCount);
-    printf("courseCOunt: %d\n", courseCount);
     
     char str2[50];
     strcpy(str2,"newCOurse");
@@ -206,7 +202,7 @@ void addCourseInfo(CourseInfo *courses, int *courseCount, char *record){
         courses[index] = newCourseInfo;
         (*courseCount)++;
     }
-    else puts("COURSE DUPLICATE");
+    else puts("UNABLE TO ADD : COURSE DUPLICATE");
 }
 
 /*
@@ -244,12 +240,15 @@ int searchCourseInfo(CourseInfo *courses, int courseCount, int courseId, char *c
     return isFound;
 }
 
+/*
+    validateData: checks for violations of unique constraints (courseID, courseCode)
+    input: the array to be searched (courses), the size of array (courseCount), the struct to validate (courseInfo)
+    output: 1 if found, else -1
+*/
 int validateData(CourseInfo *courses, int courseCount, CourseInfo courseInfo){
     
-    if(linearSearch(courses, courseCount, COURSE_CODE_FLAG, courseInfo.courseCode) == FOUND){
-        return FOUND;
-    }
-    if(binarySearch(courses, courseCount, courseInfo.courseID) == FOUND) return FOUND;
+    if(linearSearch(courses, courseCount, COURSE_CODE_FLAG, courseInfo.courseCode) != NOT_FOUND) return FOUND;
+    if(binarySearch(courses, courseCount, courseInfo.courseID) != NOT_FOUND) return FOUND;
 
     return NOT_FOUND;
 }
