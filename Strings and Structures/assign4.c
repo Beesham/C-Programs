@@ -32,7 +32,7 @@ typedef struct {
 
 //prototypes
 int loadCourseInfo(CourseInfo *courses);
-void addCourseInfo(CourseInfo *courses, int *courseCount);
+void addCourseInfo(CourseInfo *courses, int *courseCount, char *record);
 void searchCourseInfo();
 void displayCourseInfo(CourseInfo *courses, size_t courseCount);
 void processCourseRecord(char *record, CourseInfo *courseInfo);
@@ -48,7 +48,15 @@ int main(void){
     
     courseCount = loadCourseInfo(courses);
     displayCourseInfo(courses, courseCount);
-    //addCourseInfo(courses, &courseCount);
+    printf("courseCOunt: %d", courseCount);
+    
+    char str[50];
+    strcpy(str,"newCOurse,05,50,242,93,F,2018");
+    addCourseInfo(courses, &courseCount, str);
+    displayCourseInfo(courses, courseCount);
+    printf("courseCOunt: %d", courseCount);
+
+
     
     return 0;
 }
@@ -80,9 +88,8 @@ void processCourseRecord(char *record, CourseInfo *courseInfo){
     
     char *strTokPtr;
     int index = 1;  //the index of data to be processed
-    
+
     strTokPtr = strtok(record, ",");
-    
     while(strTokPtr != NULL){
         
         switch(index){
@@ -165,11 +172,11 @@ void convertToUppercase(char *string){
 /*
 
 */
-void addCourseInfo(CourseInfo *courses, int *courseCount){
-    int index = (*courseCount) - 1;
-    printf("%s", "Please enter course info as [Name, Code(XXXX-XXX-XX), Term(TYYYY)]");
-    scanf("%s %s %s", courses[index].courseName, courses[index].courseCode, courses[index].term);
-    courses[index].courseID = mCourseId++;
+void addCourseInfo(CourseInfo *courses, int *courseCount, char *record){
+    int index = *courseCount;
+    CourseInfo newCourseInfo = {0};
+    processCourseRecord(record, &newCourseInfo);
+    courses[index] = newCourseInfo;
     (*courseCount)++;
 }
 
