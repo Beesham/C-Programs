@@ -31,55 +31,66 @@ typedef struct {
 } CourseInfo;
 
 //prototypes
-void loadCourseInfo(CourseInfo *courses);
+int loadCourseInfo(CourseInfo *courses);
 void addCourseInfo();
 void searchCourseInfo();
 void displayCourseInfo();
-CourseInfo* processCourseRecord(char *record, CourseInfo *courseInfo);
+void processCourseRecord(char *record, CourseInfo *courseInfo);
 void convertToUppercase(char *string);
 
 int main(void){
     
     CourseInfo courses[MAX_COURSES];
+    int courseCount;
     
-    loadCourseInfo(courses);
+    courseCount = loadCourseInfo(courses);
+    displayCourseInfo(courses, courseCount);
 }
 
 /*
     loadCourseInfo: reads data relating to courses from a csv and stores it in an array of CourseInfo
     input: the array to store the data (courses)
 */
-void loadCourseInfo(CourseInfo *courses){
+int loadCourseInfo(CourseInfo *courses){
         
     char courseRecordBuffer[MAX_LINE_LENGTH];
+    int courseCount = 0;
     
     while(fgets(courseRecordBuffer, MAX_LINE_LENGTH, stdin) != NULL){
-        printf("%s", courseRecordBuffer);
         CourseInfo ci = {0};
         processCourseRecord(courseRecordBuffer, &ci);
+        courses[courseCount++] = ci;
     }
     
+    return courseCount;
 }
 
-CourseInfo* processCourseRecord(char *record, CourseInfo *courseInfo){
+/*
+    processCourseRecord: formats data relating to a course into readable output
+    input: the data to be formatted (record), a struct to save the data (courseInfo)
+*/
+void processCourseRecord(char *record, CourseInfo *courseInfo){
     
-    int recordLength = strlen(record);
     char *strTokPtr;
-    int index = 1;
+    int index = 1;  //the index of data to be processed
+    
+    static int courseId = 1;
     
     strTokPtr = strtok(record, ",");
     
     while(strTokPtr != NULL){
-                printf("token: %s\n", strTokPtr);
         
         switch(index){
             
+            //processes the name of the course
             case COURSENAMEINDEX:{
                 convertToUppercase(strTokPtr);
                 strcpy(courseInfo->courseName, strTokPtr);
             }
             break;
             
+            //processes the course code of the course along with SUBJECTINDEX, LEVELINDEX, and SECTIONINDEX
+            //concats the three codes together
             case FACULTYINDEX:{
                 sprintf(courseInfo->courseCode, "%02d", atoi(strTokPtr));
             }
@@ -113,10 +124,10 @@ CourseInfo* processCourseRecord(char *record, CourseInfo *courseInfo){
                 sprintf(sectionCode, "%02d", atoi(strTokPtr));
 
                 strcat(courseInfo->courseCode, sectionCode);
-                printf("course code : %s\n", courseInfo->courseCode);   
             }
             break;
             
+            //process the term 
             case SEMESTERINDEX:{
                 convertToUppercase(strTokPtr);
                 sprintf(courseInfo->term, "%s", strTokPtr);
@@ -125,29 +136,24 @@ CourseInfo* processCourseRecord(char *record, CourseInfo *courseInfo){
             
             case YEARINDEX:{
                 int year = atoi(strTokPtr);
-                char temp[4];
-                
+                char temp[4];            
                 sprintf(temp, "%d", year);
-
                 strcat(courseInfo->term, temp);
-                printf("term code : %s\n", courseInfo->term);   
-
             }
             break;
         }
-        
+                
         index++;
         
         strTokPtr = strtok(NULL, ",");
     }
-    
-    
-    return courseInfo;
+    courseInfo->courseID = courseId++;
 }
 
 void convertToUppercase(char *string){
-    while(*string++ != '\0'){
+    while(*string != '\0'){
         *string = toupper(*string);
+        string++;
     }    
 }
 
@@ -166,8 +172,12 @@ void searchCourseInfo(){
 }
 
 /*
-
+    displayCourseInfo: displays the all courses information 
+    input: an array of courses to display (courses), the number of courses to display (courseCount)
 */
-void displayCourseInfo(){
-    
+void displayCourseInfo(CourseInfo *courses, size_t courseCount){
+    printf("%-5s%-20s%-20s%-8s\n", "ID","Name","Code","Term");
+    for(size_t i = 0; i < courseCount; i++){
+        printf("%-5d%-20s%-20s%-8s\n", courses[i].courseID, courses[i].courseName, courses[i].courseCode, courses[i].term);
+    }
 }
