@@ -26,6 +26,11 @@
 #define SEMESTERINDEX 6
 #define YEARINDEX 7
 
+typedef enum { 
+    NAME_FLAG,
+    COURSE_CODE_FLAG
+} searchFlag;        
+
 typedef struct {
     int courseID;
     char courseName[MAX_COURSE_NAME_LENGTH];
@@ -40,6 +45,8 @@ int searchCourseInfo(CourseInfo *courses, int courseCount, int courseId, char *c
 void displayCourseInfo(CourseInfo *courses, size_t courseCount);
 void processCourseRecord(char *record, CourseInfo *courseInfo);
 void convertToUppercase(char *string);
+int binarySearch(CourseInfo *courses, int courseCount, int searchKey);
+int linearSearch(CourseInfo *courses, int courseCount, searchFlag flag, char *searchKey);
 
 static int mCourseId = 1;
 
@@ -56,14 +63,19 @@ int main(void){
     printf("courseCOunt: %d\n", courseCount);
     
     char str[50];
-    strcpy(str,"newCOurse,05,50,242,93,F,2018");
+    strcpy(str,"newCOurse,03,60,141,01,F,2018");
     addCourseInfo(courses, &courseCount, str);
     displayCourseInfo(courses, courseCount);
     printf("courseCOunt: %d\n", courseCount);
     
     char str2[50];
     strcpy(str2,"newCOurse");
-    searchCourseInfo(courses, courseCount, 3, NULL);
+
+    //searchCourseInfo(courses, courseCount, 1, NULL);
+    //searchCourseInfo(courses, courseCount, 2, NULL);
+    //searchCourseInfo(courses, courseCount, 3, NULL);
+    searchCourseInfo(courses, courseCount, 4, NULL);
+
     searchCourseInfo(courses, courseCount, 0, str2);
 
 
@@ -183,11 +195,18 @@ void convertToUppercase(char *string){
     input: the array to be added to, the number of courses existing (courseCount), the course data to be added (record)
 */
 void addCourseInfo(CourseInfo *courses, int *courseCount, char *record){
+    int validateData(CourseInfo *courses, int courseCount, CourseInfo courseInfo);
+
     int index = *courseCount;
     CourseInfo newCourseInfo = {0};
     processCourseRecord(record, &newCourseInfo);
-    courses[index] = newCourseInfo;
-    (*courseCount)++;
+    
+    
+    if(validateData(courses, *courseCount, newCourseInfo) != FOUND){
+        courses[index] = newCourseInfo;
+        (*courseCount)++;
+    }
+    else puts("COURSE DUPLICATE");
 }
 
 /*
@@ -197,9 +216,6 @@ void addCourseInfo(CourseInfo *courses, int *courseCount, char *record){
 */
 int searchCourseInfo(CourseInfo *courses, int courseCount, int courseId, char *courseName){
     
-    int binarySearch(CourseInfo *courses, int courseCount, int searchKey);
-    int linearSearch(CourseInfo *courses, int courseCount, char *searchKey);
-
     int resultIndex;
     
     int isFound = NOT_FOUND;
@@ -217,7 +233,7 @@ int searchCourseInfo(CourseInfo *courses, int courseCount, int courseId, char *c
     //search for course name
     else if(courseName != NULL){
 
-        resultIndex = linearSearch(courses, courseCount, courseName);
+        resultIndex = linearSearch(courses, courseCount, NAME_FLAG, courseName);
         if(resultIndex != NOT_FOUND){
             courses += resultIndex;
             displayCourseInfo(courses, 1);
@@ -228,25 +244,38 @@ int searchCourseInfo(CourseInfo *courses, int courseCount, int courseId, char *c
     return isFound;
 }
 
-int validateData(CourseInfo *courses, int courseCount){
+int validateData(CourseInfo *courses, int courseCount, CourseInfo courseInfo){
     
-    //if(searchCourseInfo(courses, courseCount, 3, NULL);
+    if(linearSearch(courses, courseCount, COURSE_CODE_FLAG, courseInfo.courseCode) == FOUND){
+        return FOUND;
+    }
+    if(binarySearch(courses, courseCount, courseInfo.courseID) == FOUND) return FOUND;
 
-    
-    return 1;
+    return NOT_FOUND;
 }
 
 /*
     linearSearch: searches through an array for a value using linear search algorithm
-    input: the array to be searched (courses), the size of array (courseCount), the searchKey (searchKey)
+    input: the array to be searched (courses), the size of array (courseCount), the flag to indicate
+    what is being searched for, the searchKey (searchKey)
     output: the index of the found key in the array, or -1 if not found
 */
-int linearSearch(CourseInfo *courses, int courseCount, char *searchKey){
+int linearSearch(CourseInfo *courses, int courseCount, searchFlag flag, char *searchKey){
 
-    convertToUppercase(searchKey);
+    switch(flag){
+        case NAME_FLAG:{
+            convertToUppercase(searchKey);
 
-    for(size_t i = 0; i < courseCount; i++){
-        if (!strcmp(searchKey, courses[i].courseName)) return i;
+            for(size_t i = 0; i < courseCount; i++){
+                if (!strcmp(searchKey, courses[i].courseName)) return i;
+            }
+        }break;
+        
+        case COURSE_CODE_FLAG:{
+            for(size_t i = 0; i < courseCount; i++){
+                if (!strcmp(searchKey, courses[i].courseCode)) return i;
+            }
+        }break;
     }
     
     return NOT_FOUND;
@@ -259,21 +288,21 @@ int linearSearch(CourseInfo *courses, int courseCount, char *searchKey){
 */
 int binarySearch(CourseInfo *courses, int courseCount, int searchKey){
     int low = 0, high = courseCount - 1;
-    int middle = (low + high)/2;
     
     while(low <= high){
-            
+        int middle = (low + high)/2;
+
         if(courses[middle].courseID == searchKey){
             return middle;
         }
-        
-        if(searchKey > courses[middle].courseID){
-            low = middle + 1;
-        }
-        
-        if(searchKey < courses[middle].courseID){
+        else if(searchKey < courses[middle].courseID){
             high = middle - 1;
         }
+        else{ //(searchKey > courses[middle].courseID){
+            low = middle + 1;
+        }
+
+        
     }
     
     return NOT_FOUND;
