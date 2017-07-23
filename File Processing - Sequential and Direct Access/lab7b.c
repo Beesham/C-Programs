@@ -1,9 +1,11 @@
 /*
     Author: Beesham Sarendranauth, 104854956
     Date: 2017/07/31
-    Description: this program interactively generates employee records storing them in a .dat file
+    Description: this program interactively generates employee records storing them in a .dat file, and reads
+    that file and edits its content to capitalize the names
 */
 #include <stdio.h>
+#include <ctype.h>
 
 #define EMP_ARR_SIZE 3
 
@@ -24,6 +26,8 @@ void printEmpList(const Employee *EmpList);
 void saveEmpList(const Employee *EmpList, const char *FileName);
 /* Read employee records from a file into an array of stucts */
 void readEmpList(Employee *EmpList, const char *FileName);
+/* Capitalizes the first letter of the word */
+void wordCap(char *word);
 
 
 int main() {
@@ -31,16 +35,18 @@ int main() {
     char *FILENAME = "employee.dat";
     
     //inputEmpRecord(EmpList);
-    //saveEmpList(EmpList, );
     
     readEmpList(EmpList, FILENAME);
     printEmpList(EmpList);
-
+    saveEmpList(EmpList, FILENAME);
     
     return 0;
 }
 
-/* Input the employee data interactively from the keyboard */
+/*  
+    inputEmpRecord: Input the employee data interactively from the keyboard 
+    input: the array for the data to be saved in
+*/
 void inputEmpRecord(Employee *EmpList){
     for(size_t i = 0; i < EMP_ARR_SIZE; i++){
         Employee emp = {0};
@@ -50,7 +56,10 @@ void inputEmpRecord(Employee *EmpList){
     }
 }
 
-/* Display the contents of Employee records from the list */
+/*  
+    printEmpList: Display the contents of Employee records from the list 
+    input: the array to read from
+*/
 void printEmpList(const Employee *EmpList){
     
     printf("%-4s%-10s%-10s%-4s\n", "ID", "FIRSTNAME", "LASTNAME", "GPA");
@@ -60,7 +69,10 @@ void printEmpList(const Employee *EmpList){
     }
 }
 
-/* Save the employee records from the list to the newly created text file specified by FileName */
+/*  
+    saveEmpList: Save the employee records from the list to the newly created text file specified by FileName
+    input: the array to read from, the file to write to 
+*/
 void saveEmpList(const Employee *EmpList, const char *FileName){
     FILE *filePtr;
 
@@ -72,7 +84,10 @@ void saveEmpList(const Employee *EmpList, const char *FileName){
     }
 }
 
-/* Read employee records from a file into an array of stucts */
+/*  
+    readEmpList: Read employee records from a file into an array of stucts 
+    input: the array to save to, the file to read from
+*/
 void readEmpList(Employee *EmpList, const char *FileName){
     FILE *filePtr;
 
@@ -81,13 +96,25 @@ void readEmpList(Employee *EmpList, const char *FileName){
         int count = 0;
         Employee emp = {0};
         fscanf(filePtr, "%d%s%s%f\n", &(emp.id), emp.firstname, emp.lastname, &(emp.GPA));
+        wordCap(emp.firstname);
+        wordCap(emp.lastname);
         EmpList[count] = emp;
 
         while(!feof(filePtr)){  
             count++;
             Employee emp = {0};
             fscanf(filePtr, "%d %s %s %f\n", &(emp.id), emp.firstname, emp.lastname, &(emp.GPA));
+            wordCap(emp.firstname);
+            wordCap(emp.lastname);
             EmpList[count] = emp;
         }
     }
+}
+
+/*  
+    wordCap: Capitalizes the first letter of the word 
+    input: the word to capitalize
+*/
+void wordCap(char *word){
+    *word = toupper(word[0]);
 }

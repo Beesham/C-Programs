@@ -35,7 +35,10 @@ int main() {
     return 0;
 }
 
-/* Input the employee data interactively from the keyboard */
+/*  
+    inputEmpRecord: Input the employee data interactively from the keyboard 
+    input: the array for the data to be saved in
+*/
 void inputEmpRecord(Employee *EmpList){
     for(size_t i = 0; i < EMP_ARR_SIZE; i++){
         Employee emp = {0};
@@ -45,7 +48,10 @@ void inputEmpRecord(Employee *EmpList){
     }
 }
 
-/* Display the contents of Employee records from the list */
+/*  
+    printEmpList: Display the contents of Employee records from the list 
+    input: the array to read from
+*/
 void printEmpList(const Employee *EmpList){
     
     printf("%-4s%-10s%-10s%-4s\n", "ID", "FIRSTNAME", "LASTNAME", "GPA");
@@ -55,7 +61,10 @@ void printEmpList(const Employee *EmpList){
     }
 }
 
-/* Save the employee records from the list to the newly created text file specified by FileName */
+/*  
+    saveEmpList: Save the employee records from the list to the newly created text file specified by FileName
+    input: the array to read from, the file to write to 
+*/
 void saveEmpList(const Employee *EmpList, const char *FileName){
     FILE *filePtr;
 
