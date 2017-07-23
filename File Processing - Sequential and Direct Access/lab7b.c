@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <ctype.h>
 
-#define EMP_ARR_SIZE 3
+#define EMP_ARR_SIZE 4
 
 struct employee {
     char firstname[40];
