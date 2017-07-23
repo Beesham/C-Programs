@@ -73,5 +73,6 @@ void saveEmpList(const Employee *EmpList, const char *FileName){
         for(size_t i = 0; i < EMP_ARR_SIZE; i++){     
             fprintf(filePtr, "%d %s %s %.1f\n", EmpList[i].id, EmpList[i].firstname, EmpList[i].lastname, EmpList[i].GPA);
         }
-    }
+        fclose(filePtr);
+    }    
 }

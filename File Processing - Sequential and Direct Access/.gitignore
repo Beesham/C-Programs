@@ -4,4 +4,7 @@ a.exe.stackdump
 a.out.stackdump
 .lab7a.c.swp
 .lab7b.c.swp
+.lab7c.c.swp
+.lab7d.c.swp
 employee.dat
+employeeDA.dat
