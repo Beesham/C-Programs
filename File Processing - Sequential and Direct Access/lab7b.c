@@ -22,15 +22,20 @@ void inputEmpRecord(Employee *EmpList);
 void printEmpList(const Employee *EmpList);
 /* Save the employee records from the list to the newly created text file specified by FileName */
 void saveEmpList(const Employee *EmpList, const char *FileName);
+/* Read employee records from a file into an array of stucts */
+void readEmpList(Employee *EmpList, const char *FileName);
 
 
 int main() {
     Employee EmpList[EMP_ARR_SIZE];
+    char *FILENAME = "employee.dat";
     
-    inputEmpRecord(EmpList);
+    //inputEmpRecord(EmpList);
+    //saveEmpList(EmpList, );
+    
+    readEmpList(EmpList, FILENAME);
     printEmpList(EmpList);
-    
-    saveEmpList(EmpList, "employee.dat");
+
     
     return 0;
 }
@@ -63,6 +68,26 @@ void saveEmpList(const Employee *EmpList, const char *FileName){
     else{
         for(size_t i = 0; i < EMP_ARR_SIZE; i++){     
             fprintf(filePtr, "%d %s %s %.1f\n", EmpList[i].id, EmpList[i].firstname, EmpList[i].lastname, EmpList[i].GPA);
+        }
+    }
+}
+
+/* Read employee records from a file into an array of stucts */
+void readEmpList(Employee *EmpList, const char *FileName){
+    FILE *filePtr;
+
+    if((filePtr = fopen(FileName, "r")) == NULL) puts("FILE COULD NOT BE OPENED");
+    else{
+        int count = 0;
+        Employee emp = {0};
+        fscanf(filePtr, "%d%s%s%f\n", &(emp.id), emp.firstname, emp.lastname, &(emp.GPA));
+        EmpList[count] = emp;
+
+        while(!feof(filePtr)){  
+            count++;
+            Employee emp = {0};
+            fscanf(filePtr, "%d %s %s %f\n", &(emp.id), emp.firstname, emp.lastname, &(emp.GPA));
+            EmpList[count] = emp;
         }
     }
 }
