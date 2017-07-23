@@ -5,29 +5,64 @@
 */
 #include <stdio.h>
 
+#define EMP_ARR_SIZE 3
+
 struct employee {
     char firstname[40];
     char lastname[40];
     int id;
-    int GPA;
+    float GPA;
 };
 
 typedef struct employee Employee;
     
 /* Input the employee data interactively from the keyboard */
-void InputEmpRecord(Employee *EmpList);
+void inputEmpRecord(Employee *EmpList);
 /* Display the contents of Employee records from the list */
-void PrintEmpList(const Employee *EmpList);
+void printEmpList(const Employee *EmpList);
 /* Save the employee records from the list to the newly created text file specified by FileName */
-void SaveEmpList(const Employee *EmpList, const char *FileName);
+void saveEmpList(const Employee *EmpList, const char *FileName);
 
 
 int main() {
-    Employee EmpList[3];
+    Employee EmpList[EMP_ARR_SIZE];
     
-    InputEmpRecord(EmpList);
-    PrintEmpList(EmpList);
-    SaveEmpList(EmpList, "employee.dat");
+    inputEmpRecord(EmpList);
+    printEmpList(EmpList);
+    
+    saveEmpList(EmpList, "employee.dat");
     
     return 0;
+}
+
+/* Input the employee data interactively from the keyboard */
+void inputEmpRecord(Employee *EmpList){
+    for(size_t i = 0; i < EMP_ARR_SIZE; i++){
+        Employee emp = {0};
+        printf("%s", "Please enter an employee record (ID FirstName LastName GPA):\n? ");
+        scanf("%d %s %s %f", &(emp.id), emp.firstname, emp.lastname, &(emp.GPA));
+        EmpList[i] = emp;
+    }
+}
+
+/* Display the contents of Employee records from the list */
+void printEmpList(const Employee *EmpList){
+    
+    printf("%-4s%-10s%-10s%-4s\n", "ID", "FIRSTNAME", "LASTNAME", "GPA");
+    
+    for(size_t i = 0; i < EMP_ARR_SIZE; i++){     
+        printf("%-4d%-10s%-10s%-4.1f\n", EmpList[i].id, EmpList[i].firstname, EmpList[i].lastname, EmpList[i].GPA);
+    }
+}
+
+/* Save the employee records from the list to the newly created text file specified by FileName */
+void saveEmpList(const Employee *EmpList, const char *FileName){
+    FILE *filePtr;
+
+    if((filePtr = fopen(FileName, "w")) == NULL) puts("FILE COULD NOT BE OPENED");
+    else{
+        for(size_t i = 0; i < EMP_ARR_SIZE; i++){     
+            fprintf(filePtr, "%-4d%-10s%-10s%-4.1f\n", EmpList[i].id, EmpList[i].firstname, EmpList[i].lastname, EmpList[i].GPA);
+        }
+    }
 }
