@@ -1,0 +1,405 @@
+Script started on Tue, Jul 25, 2017  6:15:11 PM
+]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures
+[32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures[0m
+$ exit$ ./a.exe$ cc assign4.c$ c[1@at assign4.c
+/*
+	Author: Beesham Sarendranauth, 104854956
+	Date: 2017/07/27
+	Description: This program processes a comma separated values (csv) file. New data can be added,
+    searched, or displayed.
+*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+
+#define FOUND 1
+#define NOT_FOUND -1
+
+#define MAX_LINE_LENGTH 256
+#define MAX_COURSES 10
+#define MAX_COURSE_NAME_LENGTH 50
+#define MAX_COURSE_CODE_LENGTH 12
+#define MAX_TERM_LENGTH 6
+
+#define COURSENAMEINDEX 1
+#define FACULTYINDEX 2
+#define SUBJECTINDEX 3
+#define LEVELINDEX 4
+#define SECTIONINDEX 5
+#define SEMESTERINDEX 6
+#define YEARINDEX 7
+
+typedef enum { 
+    NAME_FLAG,
+    COURSE_CODE_FLAG
+} searchFlag;        
+
+typedef struct {
+    int courseID;
+    char courseName[MAX_COURSE_NAME_LENGTH];
+    char courseCode[MAX_COURSE_CODE_LENGTH];
+    char term[MAX_TERM_LENGTH];
+} CourseInfo;
+
+//prototypes
+int loadCourseInfo(CourseInfo *courses);
+void addCourseInfo(CourseInfo *courses, int *courseCount, char *record);
+int searchCourseInfo(const CourseInfo *courses, size_t courseCount, int courseId, char *courseName);
+void displayCourseInfo(const CourseInfo *courses, size_t courseCount);
+void processCourseRecord(char *record, CourseInfo *courseInfo);
+void convertToUppercase(char *string);
+int binarySearch(const CourseInfo *courses, size_t courseCount, int searchKey);
+int linearSearch(const CourseInfo *courses, size_t courseCount, searchFlag flag, char *searchKey);
+
+static int mCourseId = 1;
+
+
+int main(void){
+    
+    CourseInfo courses[MAX_COURSES];
+    int courseCount = 0;
+    
+    puts("LOADED COURSES:");
+    courseCount = loadCourseInfo(courses);
+    displayCourseInfo(courses, courseCount);
+    
+    puts("");
+    
+    puts("ADD NEW COURSE:");
+    char newCourseRecord[MAX_COURSE_NAME_LENGTH];
+    strcpy(newCourseRecord,"newCOurse,3,60,241,01,F,2018");
+    addCourseInfo(courses, &courseCount, newCourseRecord);
+    displayCourseInfo(courses, courseCount);
+    
+    puts("");
+    
+    puts("ADD NEW COURSE WITH SAME COURSE CODE:");
+    char newCourseRecord2[MAX_COURSE_NAME_LENGTH];
+    strcpy(newCourseRecord2,"newCOurse2,03,60,241,01,F,2018");
+    addCourseInfo(courses, &courseCount, newCourseRecord2);
+    displayCourseInfo(courses, courseCount);
+    
+    puts("");
+    
+    puts("SEARCH FOR COURSE WITH ID 1 & 4 & 11:");
+    searchCourseInfo(courses, courseCount, 1, NULL);
+    searchCourseInfo(courses, courseCount, 4, NULL);
+    searchCourseInfo(courses, courseCount, 11, NULL);
+
+    
+
+    puts("");
+
+    puts("SEARCH FOR COURSE WITH NAME 'newcourse' & 'math':");
+    char courseName[MAX_COURSE_NAME_LENGTH];
+    strcpy(courseName,"newcourse");
+    searchCourseInfo(courses, courseCount, 0, courseName);
+    
+    char courseName2[MAX_COURSE_NAME_LENGTH];
+    strcpy(courseName2,"math");
+    searchCourseInfo(courses, courseCount, 0, courseName2);
+    
+    return 0;
+}
+
+/*
+    loadCourseInfo: reads data relating to courses from a csv and stores it in an array of CourseInfo
+    input: the array to store the data (courses)
+    output: the number of records read/ number of courses (courseCount)
+*/
+int loadCourseInfo(CourseInfo *courses){
+        
+    char courseRecordBuffer[MAX_LINE_LENGTH];
+    int courseCount = 0;
+    
+    while(fgets(courseRecordBuffer, MAX_LINE_LENGTH, stdin) != NULL){
+        addCourseInfo(courses, &courseCount, courseRecordBuffer);
+    }
+    
+    return courseCount;
+}
+
+/*
+    processCourseRecord: formats data relating to a course into readable output
+    input: the data to be formatted (record), a struct to save the data (courseInfo)
+*/
+void processCourseRecord(char *record, CourseInfo *courseInfo){
+    
+    char *strTokPtr;
+    int index = 1;  //the index of data to be processed
+
+    strTokPtr = strtok(record, ",");
+    while(strTokPtr != NULL){
+        
+        switch(index){
+            
+            //processes the name of the course
+            case COURSENAMEINDEX:{
+                convertToUppercase(strTokPtr);
+                strcpy(courseInfo->courseName, strTokPtr);
+            }
+            break;
+            
+            //processes the course code of the course along with SUBJECTINDEX, LEVELINDEX, and SECTIONINDEX
+            //concats the three codes together
+            case FACULTYINDEX:{
+                sprintf(courseInfo->courseCode, "%02d", atoi(strTokPtr));
+            }
+            break;
+            
+            case SUBJECTINDEX:{
+                char subjectCode[3];
+                               
+                sprintf(subjectCode, "%02d", atoi(strTokPtr));
+
+                strcat(courseInfo->courseCode, subjectCode);
+            }
+            break;
+            
+            case LEVELINDEX:{
+                strcat(courseInfo->courseCode, "-");
+
+                char levelCode[4];
+                               
+                sprintf(levelCode, "%03d", atoi(strTokPtr));
+
+                strcat(courseInfo->courseCode, levelCode);
+            }
+            break;
+            
+            case SECTIONINDEX:{
+                strcat(courseInfo->courseCode, "-");
+
+                char sectionCode[3];
+                               
+                sprintf(sectionCode, "%02d", atoi(strTokPtr));
+
+                strcat(courseInfo->courseCode, sectionCode);
+            }
+            break;
+            
+            //process the term 
+            case SEMESTERINDEX:{
+                convertToUppercase(strTokPtr);
+                sprintf(courseInfo->term, "%s", strTokPtr);
+            }
+            break;
+            
+            case YEARINDEX:{
+                int year = atoi(strTokPtr);
+                char temp[4];            
+                sprintf(temp, "%d", year);
+                strcat(courseInfo->term, temp);
+            }
+            break;
+        }
+                
+        index++;
+        
+        strTokPtr = strtok(NULL, ",");
+    }
+    courseInfo->courseID = mCourseId++;
+}
+
+void convertToUppercase(char *string){
+    while(*string != '\0'){
+        *string = toupper(*string);
+        string++;
+    }    
+}
+
+/*
+    addCourseInfo: adds a new course to the courses array
+    input: the array to be added to, the number of courses existing (courseCount), the course data to be added (record)
+*/
+void addCourseInfo(CourseInfo *courses, int *courseCount, char *record){
+    int validateData(const CourseInfo *courses, size_t courseCount, CourseInfo courseInfo);
+
+    int index = *courseCount;
+    CourseInfo newCourseInfo = {0};
+    processCourseRecord(record, &newCourseInfo);
+    
+    
+    if(validateData(courses, *courseCount, newCourseInfo) != FOUND){
+        courses[index] = newCourseInfo;
+        (*courseCount)++;
+    }
+    else printf("%s %s\n","*DUPLICATE COURSE ID OR CODE* UNABLE TO ADD:", newCourseInfo.courseName);
+}
+
+/*
+    searchCourseInfo: searches through an array for a value, only one value can be searched at a time, either name or id
+    input: the array to be searched (courses), the size of array (courseCount), the searchKey (courseId or courseName)
+    output: if found key 1, or -1 if not found
+*/
+int searchCourseInfo(const CourseInfo *courses, size_t courseCount, int courseId, char *courseName){
+    
+    int resultIndex;
+    
+    int isFound = NOT_FOUND;
+    
+    //search for course id
+    if(courseId != 0){
+        
+        resultIndex = binarySearch(courses, courseCount, courseId);
+        if(resultIndex != NOT_FOUND){
+            courses += resultIndex;
+            displayCourseInfo(courses, 1);
+            isFound = FOUND;
+        }
+        else printf("%s %d %s\n", "COURSE ID:", courseId, "WAS NOT FOUND");
+    }
+    //search for course name
+    else if(courseName != NULL){
+
+        resultIndex = linearSearch(courses, courseCount, NAME_FLAG, courseName);
+        if(resultIndex != NOT_FOUND){
+            courses += resultIndex;
+            displayCourseInfo(courses, 1);
+            isFound = FOUND;
+        }
+        else printf("%s %s %s\n", "COURSE NAME:", courseName, "WAS NOT FOUND");
+
+    }
+    
+    return isFound;
+}
+
+/*
+    validateData: checks for violations of unique constraints (courseID, courseCode)
+    input: the array to be searched (courses), the size of array (courseCount), the struct to validate (courseInfo)
+    output: 1 if found, else -1
+*/
+int validateData(const CourseInfo *courses, size_t courseCount, CourseInfo courseInfo){
+    
+    if(linearSearch(courses, courseCount, COURSE_CODE_FLAG, courseInfo.courseCode) != NOT_FOUND) return FOUND;
+    if(binarySearch(courses, courseCount, courseInfo.courseID) != NOT_FOUND) return FOUND;
+
+    return NOT_FOUND;
+}
+
+/*
+    linearSearch: searches through an array for a value using linear search algorithm
+    input: the array to be searched (courses), the size of array (courseCount), the flag to indicate
+    what is being searched for, the searchKey (searchKey)
+    output: the index of the found key in the array, or -1 if not found
+*/
+int linearSearch(const CourseInfo *courses, size_t courseCount, searchFlag flag, char *searchKey){
+
+    switch(flag){
+        case NAME_FLAG:{
+            convertToUppercase(searchKey);
+
+            for(size_t i = 0; i < courseCount; i++){
+                if (!strcmp(searchKey, courses[i].courseName)) return i;
+            }
+        }break;
+        
+        case COURSE_CODE_FLAG:{
+            for(size_t i = 0; i < courseCount; i++){
+                if (!strcmp(searchKey, courses[i].courseCode)) return i;
+            }
+        }break;
+    }
+    
+    return NOT_FOUND;
+}
+
+/*
+    binarySearch: searches through an array for a value using binary search algorithm
+    input: the array to be searched (courses), the size of array (courseCount), the searchKey (searchKey)
+    output: the index of the found key in the array, or -1 if not found
+*/
+int binarySearch(const CourseInfo *courses, size_t courseCount, int searchKey){
+    int low = 0, high = courseCount - 1;
+    
+    while(low <= high){
+        int middle = (low + high)/2;
+
+        if(courses[middle].courseID == searchKey){
+            return middle;
+        }
+        else if(searchKey < courses[middle].courseID){
+            high = middle - 1;
+        }
+        else{ //(searchKey > courses[middle].courseID){
+            low = middle + 1;
+        }
+
+        
+    }
+    
+    return NOT_FOUND;
+}
+
+/*
+    displayCourseInfo: displays the all courses information 
+    input: an array of courses to display (courses), the number of courses to display (courseCount)
+*/
+void displayCourseInfo(const CourseInfo *courses, size_t courseCount){
+    printf("%-5s%-20s%-20s%-8s\n", "ID","Name","Code","Term");
+    for(size_t i = 0; i < courseCount; i++){
+        printf("%-5d%-20s%-20s%-8s\n", courses[i].courseID, courses[i].courseName, courses[i].courseCode, courses[i].term);
+    }
+}]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures
+[32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures[0m
+$ cat input.csv
+programming,03,60,141,01,W,2015
+programming,03,60,141,30,W,2015
+Algebra,03,62,102,02,S,2013
+Religion,08,98,938, 20,F,2014]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures
+[32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures[0m
+$ cc assign4.c
+]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures
+[32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures[0m
+$ ./a.exe < input.csv
+LOADED COURSES:
+ID   Name                Code                Term    
+1    PROGRAMMING         0360-141-01         W2015   
+2    PROGRAMMING         0360-141-30         W2015   
+3    ALGEBRA             0362-102-02         S2013   
+4    RELIGION            0898-938-20         F2014   
+
+ADD NEW COURSE:
+ID   Name                Code                Term    
+1    PROGRAMMING         0360-141-01         W2015   
+2    PROGRAMMING         0360-141-30         W2015   
+3    ALGEBRA             0362-102-02         S2013   
+4    RELIGION            0898-938-20         F2014   
+5    NEWCOURSE           0360-241-01         F2018   
+
+ADD NEW COURSE WITH SAME COURSE CODE:
+*DUPLICATE COURSE ID OR CODE* UNABLE TO ADD: NEWCOURSE2
+ID   Name                Code                Term    
+1    PROGRAMMING         0360-141-01         W2015   
+2    PROGRAMMING         0360-141-30         W2015   
+3    ALGEBRA             0362-102-02         S2013   
+4    RELIGION            0898-938-20         F2014   
+5    NEWCOURSE           0360-241-01         F2018   
+
+SEARCH FOR COURSE WITH ID 1 & 4 & 11:
+ID   Name                Code                Term    
+1    PROGRAMMING         0360-141-01         W2015   
+ID   Name                Code                Term    
+4    RELIGION            0898-938-20         F2014   
+COURSE ID: 11 WAS NOT FOUND
+
+SEARCH FOR COURSE WITH NAME 'newcourse' & 'math':
+ID   Name                Code                Term    
+5    NEWCOURSE           0360-241-01         F2018   
+COURSE NAME: MATH WAS NOT FOUND
+]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures
+[32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures[0m
+$ ls -l
+total 97
+-rwxr-xr-x+ 1 Beesham Beesham 68547 Jul 25 18:15 a.exe
+-rwx---r-x+ 1 Beesham Beesham 11030 Jul 22 19:14 assign4.c
+-rw-r--r--+ 1 Beesham Beesham     0 Jul 25 18:15 assign4.txt
+-rwx---r-x+ 1 Beesham Beesham   124 Jul 22 19:14 input.csv
+]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures
+[32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures[0m
+$ exit
+exit
+
+Script done on Tue, Jul 25, 2017  6:16:13 PM

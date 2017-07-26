@@ -56,10 +56,18 @@ int main(void){
     CourseInfo courses[MAX_COURSES];
     int courseCount = 0;
     
+   
+    
+    
+    
+    
+    
+    
     puts("LOADED COURSES:");
     courseCount = loadCourseInfo(courses);
     displayCourseInfo(courses, courseCount);
     
+    /*
     puts("");
     
     puts("ADD NEW COURSE:");
@@ -95,6 +103,7 @@ int main(void){
     char courseName2[MAX_COURSE_NAME_LENGTH];
     strcpy(courseName2,"math");
     searchCourseInfo(courses, courseCount, 0, courseName2);
+    */
     
     return 0;
 }
@@ -105,14 +114,24 @@ int main(void){
     output: the number of records read/ number of courses (courseCount)
 */
 int loadCourseInfo(CourseInfo *courses){
-        
+    
+    FILE *filePtr = NULL;
+    char fileName[50];
+
     char courseRecordBuffer[MAX_LINE_LENGTH];
     int courseCount = 0;
     
-    while(fgets(courseRecordBuffer, MAX_LINE_LENGTH, stdin) != NULL){
-        addCourseInfo(courses, &courseCount, courseRecordBuffer);
-    }
+    printf("%s", "Enter file to load courses from: ");
+    scanf("%s", fileName);
     
+    if((filePtr = fopen(fileName, "r")) == NULL) puts("Unable to open file. Exiting...");
+    else{
+        while(fgets(courseRecordBuffer, MAX_LINE_LENGTH, filePtr) != NULL){
+            addCourseInfo(courses, &courseCount, courseRecordBuffer);
+        }
+        fclose(filePtr);
+    }
+        
     return courseCount;
 }
 
