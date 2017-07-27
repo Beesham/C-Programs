@@ -1,7 +1,7 @@
-Script started on Tue, Jul 25, 2017  6:15:11 PM
+Script started on Thu, Jul 27, 2017  7:15:58 PM
 ]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures
 [32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures[0m
-$ exit$ ./a.exe$ cc assign4.c$ c[1@at assign4.c
+$ cat assign4.c
 /*
 	Author: Beesham Sarendranauth, 104854956
 	Date: 2017/07/27
@@ -51,6 +51,8 @@ void processCourseRecord(char *record, CourseInfo *courseInfo);
 void convertToUppercase(char *string);
 int binarySearch(const CourseInfo *courses, size_t courseCount, int searchKey);
 int linearSearch(const CourseInfo *courses, size_t courseCount, searchFlag flag, char *searchKey);
+void buildRecord(char *record, const char *s);
+
 
 static int mCourseId = 1;
 
@@ -59,47 +61,89 @@ int main(void){
     
     CourseInfo courses[MAX_COURSES];
     int courseCount = 0;
-    
-    puts("LOADED COURSES:");
+    int selection = 0;
+        
     courseCount = loadCourseInfo(courses);
-    displayCourseInfo(courses, courseCount);
     
-    puts("");
+    while (selection != 4){
+        //Displays menu
+        puts("");
+        puts("1. ADD NEW COURSE");
+        puts("2. SEARCH FOR COURSE");
+        puts("3. DISPLAY ALL COURSE DATA");
+        puts("4. EXIT");
+        
+        //Handles menu selection
+        printf("%s", "Enter option: ");
+        scanf("%d", &selection);
     
-    puts("ADD NEW COURSE:");
-    char newCourseRecord[MAX_COURSE_NAME_LENGTH];
-    strcpy(newCourseRecord,"newCOurse,3,60,241,01,F,2018");
-    addCourseInfo(courses, &courseCount, newCourseRecord);
-    displayCourseInfo(courses, courseCount);
-    
-    puts("");
-    
-    puts("ADD NEW COURSE WITH SAME COURSE CODE:");
-    char newCourseRecord2[MAX_COURSE_NAME_LENGTH];
-    strcpy(newCourseRecord2,"newCOurse2,03,60,241,01,F,2018");
-    addCourseInfo(courses, &courseCount, newCourseRecord2);
-    displayCourseInfo(courses, courseCount);
-    
-    puts("");
-    
-    puts("SEARCH FOR COURSE WITH ID 1 & 4 & 11:");
-    searchCourseInfo(courses, courseCount, 1, NULL);
-    searchCourseInfo(courses, courseCount, 4, NULL);
-    searchCourseInfo(courses, courseCount, 11, NULL);
+        switch(selection){
+            case 1:{
+                char record[MAX_LINE_LENGTH];
+                char course[MAX_COURSE_NAME_LENGTH];
+                char facultyCode[3], subjectCode[3], levelCode[4], sectionNumber[3];
+                char semester[2];
+                char year[5];
+                
+                printf("%s", "Please enter course name: ");
+                scanf("%s", course);
+                
+                printf("%s", "Faculty code: ");
+                scanf("%s,", facultyCode);
+                
+                printf("%s", "Subject code: ");
+                scanf("%s", subjectCode);
+                
+                printf("%s", "Level code: ");
+                scanf("%s", levelCode);
+                
+                printf("%s", "Section number: ");
+                scanf("%s", sectionNumber);
+                
+                printf("%s", "Semester ('S', 'F', 'W'): ");
+                scanf("%s", semester);
+                
+                printf("%s", "Year: ");
+                scanf("%s", year);
+                
+                //builds the record with comma separated values
+                strcpy(record, course);
+                buildRecord(record, facultyCode);
+                buildRecord(record, subjectCode);
+                buildRecord(record, levelCode);
+                buildRecord(record, sectionNumber);
+                buildRecord(record, semester);
+                buildRecord(record, year);
+                
+                addCourseInfo(courses, &courseCount, record);                
+            }break;
+            
+            case 2:{
+                char course[MAX_COURSE_NAME_LENGTH];
+                char *temp;
+                long courseId = 0;
+                printf("%s", "Please enter course name or ID to search for: ");
+                scanf("%s", course);
+                courseId = strtol(course, &temp, 10);
+                
+                if(courseId == 0){
+                    searchCourseInfo(courses, courseCount, 0, course);
+                }
+                else{
+                    searchCourseInfo(courses, courseCount, courseId, NULL);
+                }
+            }break;
 
-    
-
-    puts("");
-
-    puts("SEARCH FOR COURSE WITH NAME 'newcourse' & 'math':");
-    char courseName[MAX_COURSE_NAME_LENGTH];
-    strcpy(courseName,"newcourse");
-    searchCourseInfo(courses, courseCount, 0, courseName);
-    
-    char courseName2[MAX_COURSE_NAME_LENGTH];
-    strcpy(courseName2,"math");
-    searchCourseInfo(courses, courseCount, 0, courseName2);
-    
+            case 3:{
+                displayCourseInfo(courses, courseCount);
+            }break;
+            
+            case 4: return 0;
+            
+            default: puts("Unsupported action!");
+        }
+    }
+        
     return 0;
 }
 
@@ -109,14 +153,24 @@ int main(void){
     output: the number of records read/ number of courses (courseCount)
 */
 int loadCourseInfo(CourseInfo *courses){
-        
+    
+    FILE *filePtr = NULL;
+    char fileName[50];
+
     char courseRecordBuffer[MAX_LINE_LENGTH];
     int courseCount = 0;
     
-    while(fgets(courseRecordBuffer, MAX_LINE_LENGTH, stdin) != NULL){
-        addCourseInfo(courses, &courseCount, courseRecordBuffer);
-    }
+    printf("%s", "Enter file to load courses from: ");
+    scanf("%s", fileName);
     
+    if((filePtr = fopen(fileName, "r")) == NULL) puts("Unable to open file. Exiting...");
+    else{
+        while(fgets(courseRecordBuffer, MAX_LINE_LENGTH, filePtr) != NULL){
+            addCourseInfo(courses, &courseCount, courseRecordBuffer);
+        }
+        fclose(filePtr);
+    }
+        
     return courseCount;
 }
 
@@ -202,6 +256,10 @@ void processCourseRecord(char *record, CourseInfo *courseInfo){
     courseInfo->courseID = mCourseId++;
 }
 
+/*
+    convertToUppercase: converts a string to all uppercase
+    input: the string to convert (string)
+*/
 void convertToUppercase(char *string){
     while(*string != '\0'){
         *string = toupper(*string);
@@ -280,6 +338,15 @@ int validateData(const CourseInfo *courses, size_t courseCount, CourseInfo cours
 }
 
 /*
+    buildRecord: builds a course record with relating fields seperated with commas
+    input: the record being build (record), the field to add (s)
+*/
+void buildRecord(char *record, const char *s){
+    strcat(record, ",");
+    strcat(record, s);
+}
+
+/*
     linearSearch: searches through an array for a value using linear search algorithm
     input: the array to be searched (courses), the size of array (courseCount), the flag to indicate
     what is being searched for, the searchKey (searchKey)
@@ -323,7 +390,7 @@ int binarySearch(const CourseInfo *courses, size_t courseCount, int searchKey){
         else if(searchKey < courses[middle].courseID){
             high = middle - 1;
         }
-        else{ //(searchKey > courses[middle].courseID){
+        else{
             low = middle + 1;
         }
 
@@ -338,68 +405,110 @@ int binarySearch(const CourseInfo *courses, size_t courseCount, int searchKey){
     input: an array of courses to display (courses), the number of courses to display (courseCount)
 */
 void displayCourseInfo(const CourseInfo *courses, size_t courseCount){
-    printf("%-5s%-20s%-20s%-8s\n", "ID","Name","Code","Term");
+    printf("\n%-5s%-20s%-20s%-8s\n", "ID","Name","Code","Term");
     for(size_t i = 0; i < courseCount; i++){
         printf("%-5d%-20s%-20s%-8s\n", courses[i].courseID, courses[i].courseName, courses[i].courseCode, courses[i].term);
     }
 }]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures
 [32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures[0m
-$ cat input.csv
-programming,03,60,141,01,W,2015
-programming,03,60,141,30,W,2015
-Algebra,03,62,102,02,S,2013
-Religion,08,98,938, 20,F,2014]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures
-[32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures[0m
 $ cc assign4.c
 ]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures
 [32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures[0m
-$ ./a.exe < input.csv
-LOADED COURSES:
+$ ./a.exe
+Enter file to load courses from: input.csv
+
+1. ADD NEW COURSE
+2. SEARCH FOR COURSE
+3. DISPLAY ALL COURSE DATA
+4. EXIT
+Enter option: 3
+
 ID   Name                Code                Term    
 1    PROGRAMMING         0360-141-01         W2015   
 2    PROGRAMMING         0360-141-30         W2015   
 3    ALGEBRA             0362-102-02         S2013   
 4    RELIGION            0898-938-20         F2014   
 
-ADD NEW COURSE:
+1. ADD NEW COURSE
+2. SEARCH FOR COURSE
+3. DISPLAY ALL COURSE DATA
+4. EXIT
+Enter option: 1
+Please enter course name: newCourse
+Faculty code: 3
+Subject code: 60
+Level code: 141
+Section number: 1
+Semester ('S', 'F', 'W'): s
+Year: 2016
+*DUPLICATE COURSE ID OR CODE* UNABLE TO ADD: NEWCOURSE
+
+1. ADD NEW COURSE
+2. SEARCH FOR COURSE
+3. DISPLAY ALL COURSE DATA
+4. EXIT
+Enter option: 3
+
 ID   Name                Code                Term    
 1    PROGRAMMING         0360-141-01         W2015   
 2    PROGRAMMING         0360-141-30         W2015   
 3    ALGEBRA             0362-102-02         S2013   
 4    RELIGION            0898-938-20         F2014   
-5    NEWCOURSE           0360-241-01         F2018   
 
-ADD NEW COURSE WITH SAME COURSE CODE:
-*DUPLICATE COURSE ID OR CODE* UNABLE TO ADD: NEWCOURSE2
+1. ADD NEW COURSE
+2. SEARCH FOR COURSE
+3. DISPLAY ALL COURSE DATA
+4. EXIT
+Enter option: 1
+Please enter course name: newcourse2
+Faculty code: 01
+Subject code: 2
+Level code: 5
+Section number: 2
+Semester ('S', 'F', 'W'): w
+Year: 2018
+
+1. ADD NEW COURSE
+2. SEARCH FOR COURSE
+3. DISPLAY ALL COURSE DATA
+4. EXIT
+Enter option: 3
+
 ID   Name                Code                Term    
 1    PROGRAMMING         0360-141-01         W2015   
 2    PROGRAMMING         0360-141-30         W2015   
 3    ALGEBRA             0362-102-02         S2013   
 4    RELIGION            0898-938-20         F2014   
-5    NEWCOURSE           0360-241-01         F2018   
+6    NEWCOURSE2          0102-005-02         W2018   
 
-SEARCH FOR COURSE WITH ID 1 & 4 & 11:
+1. ADD NEW COURSE
+2. SEARCH FOR COURSE
+3. DISPLAY ALL COURSE DATA
+4. EXIT
+Enter option: 2
+Please enter course name or ID to search for: newcourse2
+
 ID   Name                Code                Term    
-1    PROGRAMMING         0360-141-01         W2015   
+6    NEWCOURSE2          0102-005-02         W2018   
+
+1. ADD NEW COURSE
+2. SEARCH FOR COURSE
+3. DISPLAY ALL COURSE DATA
+4. EXIT
+Enter option: 2
+Please enter course name or ID to search for: 4
+
 ID   Name                Code                Term    
 4    RELIGION            0898-938-20         F2014   
-COURSE ID: 11 WAS NOT FOUND
 
-SEARCH FOR COURSE WITH NAME 'newcourse' & 'math':
-ID   Name                Code                Term    
-5    NEWCOURSE           0360-241-01         F2018   
-COURSE NAME: MATH WAS NOT FOUND
-]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures
-[32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures[0m
-$ ls -l
-total 97
--rwxr-xr-x+ 1 Beesham Beesham 68547 Jul 25 18:15 a.exe
--rwx---r-x+ 1 Beesham Beesham 11030 Jul 22 19:14 assign4.c
--rw-r--r--+ 1 Beesham Beesham     0 Jul 25 18:15 assign4.txt
--rwx---r-x+ 1 Beesham Beesham   124 Jul 22 19:14 input.csv
+1. ADD NEW COURSE
+2. SEARCH FOR COURSE
+3. DISPLAY ALL COURSE DATA
+4. EXIT
+Enter option: 4
 ]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures
 [32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures[0m
 $ exit
 exit
 
-Script done on Tue, Jul 25, 2017  6:16:13 PM
+Script done on Thu, Jul 27, 2017  7:18:39 PM
