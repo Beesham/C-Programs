@@ -47,6 +47,8 @@ void processCourseRecord(char *record, CourseInfo *courseInfo);
 void convertToUppercase(char *string);
 int binarySearch(const CourseInfo *courses, size_t courseCount, int searchKey);
 int linearSearch(const CourseInfo *courses, size_t courseCount, searchFlag flag, char *searchKey);
+void buildRecord(char *record, const char *s);
+
 
 static int mCourseId = 1;
 
@@ -55,56 +57,94 @@ int main(void){
     
     CourseInfo courses[MAX_COURSES];
     int courseCount = 0;
+        
+    puts("LOADED COURSES:");
+    courseCount = loadCourseInfo(courses);
+    
     
    
     
+    int selection = 0;
     
+    while (selection != 4){
+        //Displays menu
+        puts("");
+        puts("1. ADD NEW COURSE");
+        puts("2. SEARCH FOR COURSE");
+        puts("3. DISPLAY ALL COURSE DATA");
+        puts("4. EXIT");
+        
+        //Handles menu selection
+        printf("%s", "Enter option: ");
+        scanf("%d", &selection);
     
-    
-    
-    
-    puts("LOADED COURSES:");
-    courseCount = loadCourseInfo(courses);
-    displayCourseInfo(courses, courseCount);
-    
-    /*
-    puts("");
-    
-    puts("ADD NEW COURSE:");
-    char newCourseRecord[MAX_COURSE_NAME_LENGTH];
-    strcpy(newCourseRecord,"newCOurse,3,60,241,01,F,2018");
-    addCourseInfo(courses, &courseCount, newCourseRecord);
-    displayCourseInfo(courses, courseCount);
-    
-    puts("");
-    
-    puts("ADD NEW COURSE WITH SAME COURSE CODE:");
-    char newCourseRecord2[MAX_COURSE_NAME_LENGTH];
-    strcpy(newCourseRecord2,"newCOurse2,03,60,241,01,F,2018");
-    addCourseInfo(courses, &courseCount, newCourseRecord2);
-    displayCourseInfo(courses, courseCount);
-    
-    puts("");
-    
-    puts("SEARCH FOR COURSE WITH ID 1 & 4 & 11:");
-    searchCourseInfo(courses, courseCount, 1, NULL);
-    searchCourseInfo(courses, courseCount, 4, NULL);
-    searchCourseInfo(courses, courseCount, 11, NULL);
+        switch(selection){
+            case 1:{
+                char record[MAX_LINE_LENGTH];
+                char course[MAX_COURSE_NAME_LENGTH];
+                char facultyCode[3], subjectCode[3], levelCode[4], sectionNumber[3];
+                char semester[2];
+                char year[5];
+                
+                printf("%s", "Please enter course name: ");
+                scanf("%s", course);
+                
+                printf("%s", "Faculty code: ");
+                scanf("%s,", facultyCode);
+                
+                printf("%s", "Subject code: ");
+                scanf("%s", subjectCode);
+                
+                printf("%s", "Level code: ");
+                scanf("%s", levelCode);
+                
+                printf("%s", "Section number: ");
+                scanf("%s", sectionNumber);
+                
+                printf("%s", "Semester ('S', 'F', 'W'): ");
+                scanf("%s", semester);
+                
+                printf("%s", "Year: ");
+                scanf("%s", year);
+                
+                //builds the record with comma separated values
+                strcpy(record, course);
+                buildRecord(record, facultyCode);
+                buildRecord(record, subjectCode);
+                buildRecord(record, levelCode);
+                buildRecord(record, sectionNumber);
+                buildRecord(record, semester);
+                buildRecord(record, year);
+                
+                addCourseInfo(courses, &courseCount, record);                
+            }break;
+            
+            case 2:{
+                char course[MAX_COURSE_NAME_LENGTH];
+                char *temp;
+                long courseId = 0;
+                printf("%s", "Please enter course name or ID to search for: ");
+                scanf("%s", course);
+                courseId = strtol(course, &temp, 10);
+                
+                if(courseId == 0){
+                    searchCourseInfo(courses, courseCount, 0, course);
+                }
+                else{
+                    searchCourseInfo(courses, courseCount, courseId, NULL);
+                }
+            }break;
 
-    
-
-    puts("");
-
-    puts("SEARCH FOR COURSE WITH NAME 'newcourse' & 'math':");
-    char courseName[MAX_COURSE_NAME_LENGTH];
-    strcpy(courseName,"newcourse");
-    searchCourseInfo(courses, courseCount, 0, courseName);
-    
-    char courseName2[MAX_COURSE_NAME_LENGTH];
-    strcpy(courseName2,"math");
-    searchCourseInfo(courses, courseCount, 0, courseName2);
-    */
-    
+            case 3:{
+                displayCourseInfo(courses, courseCount);
+            }break;
+            
+            case 4: return 0;
+            
+            default: puts("Unsupported action!");
+        }
+    }
+        
     return 0;
 }
 
@@ -217,6 +257,10 @@ void processCourseRecord(char *record, CourseInfo *courseInfo){
     courseInfo->courseID = mCourseId++;
 }
 
+/*
+    convertToUppercase: converts a string to all uppercase
+    input: the string to convert (string)
+*/
 void convertToUppercase(char *string){
     while(*string != '\0'){
         *string = toupper(*string);
@@ -292,6 +336,15 @@ int validateData(const CourseInfo *courses, size_t courseCount, CourseInfo cours
     if(binarySearch(courses, courseCount, courseInfo.courseID) != NOT_FOUND) return FOUND;
 
     return NOT_FOUND;
+}
+
+/*
+    buildRecord: builds a course record with relating fields seperated with commas
+    input: the record being build (record), the field to add (s)
+*/
+void buildRecord(char *record, const char *s){
+    strcat(record, ",");
+    strcat(record, s);
 }
 
 /*
