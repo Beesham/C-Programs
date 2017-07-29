@@ -1,7 +1,7 @@
-Script started on Thu, Jul 27, 2017  7:15:58 PM
+Script started on Thu, Jul 27, 2017  7:56:35 PM
 ]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures
 [32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures[0m
-$ cat assign4.c
+$ cat assign4.tx  c
 /*
 	Author: Beesham Sarendranauth, 104854956
 	Date: 2017/07/27
@@ -45,16 +45,13 @@ typedef struct {
 //prototypes
 int loadCourseInfo(CourseInfo *courses);
 void addCourseInfo(CourseInfo *courses, int *courseCount, char *record);
-int searchCourseInfo(const CourseInfo *courses, size_t courseCount, int courseId, char *courseName);
-void displayCourseInfo(const CourseInfo *courses, size_t courseCount);
+int searchCourseInfo(const CourseInfo *courses, const size_t courseCount, int courseId, char *courseName);
+void displayCourseInfo(const CourseInfo *courses, const size_t courseCount);
 void processCourseRecord(char *record, CourseInfo *courseInfo);
 void convertToUppercase(char *string);
-int binarySearch(const CourseInfo *courses, size_t courseCount, int searchKey);
-int linearSearch(const CourseInfo *courses, size_t courseCount, searchFlag flag, char *searchKey);
+int binarySearch(const CourseInfo *courses, const size_t courseCount, int searchKey);
+int linearSearch(const CourseInfo *courses, const size_t courseCount, searchFlag flag, char *searchKey);
 void buildRecord(char *record, const char *s);
-
-
-static int mCourseId = 1;
 
 
 int main(void){
@@ -181,7 +178,7 @@ int loadCourseInfo(CourseInfo *courses){
 void processCourseRecord(char *record, CourseInfo *courseInfo){
     
     char *strTokPtr;
-    int index = 1;  //the index of data to be processed
+    int index = 1;  //the index of data in the record to be processed
 
     strTokPtr = strtok(record, ",");
     while(strTokPtr != NULL){
@@ -253,7 +250,6 @@ void processCourseRecord(char *record, CourseInfo *courseInfo){
         
         strTokPtr = strtok(NULL, ",");
     }
-    courseInfo->courseID = mCourseId++;
 }
 
 /*
@@ -272,15 +268,17 @@ void convertToUppercase(char *string){
     input: the array to be added to, the number of courses existing (courseCount), the course data to be added (record)
 */
 void addCourseInfo(CourseInfo *courses, int *courseCount, char *record){
-    int validateData(const CourseInfo *courses, size_t courseCount, CourseInfo courseInfo);
+    int validateData(const CourseInfo *courses, const size_t courseCount, CourseInfo courseInfo);
 
     int index = *courseCount;
     CourseInfo newCourseInfo = {0};
     processCourseRecord(record, &newCourseInfo);
+    newCourseInfo.courseID = (*courseCount) + 1;
     
     
-    if(validateData(courses, *courseCount, newCourseInfo) != FOUND){
+    if(validateData(courses, *courseCount, newCourseInfo) == NOT_FOUND){
         courses[index] = newCourseInfo;
+
         (*courseCount)++;
     }
     else printf("%s %s\n","*DUPLICATE COURSE ID OR CODE* UNABLE TO ADD:", newCourseInfo.courseName);
@@ -291,7 +289,7 @@ void addCourseInfo(CourseInfo *courses, int *courseCount, char *record){
     input: the array to be searched (courses), the size of array (courseCount), the searchKey (courseId or courseName)
     output: if found key 1, or -1 if not found
 */
-int searchCourseInfo(const CourseInfo *courses, size_t courseCount, int courseId, char *courseName){
+int searchCourseInfo(const CourseInfo *courses, const size_t courseCount, int courseId, char *courseName){
     
     int resultIndex;
     
@@ -327,9 +325,9 @@ int searchCourseInfo(const CourseInfo *courses, size_t courseCount, int courseId
 /*
     validateData: checks for violations of unique constraints (courseID, courseCode)
     input: the array to be searched (courses), the size of array (courseCount), the struct to validate (courseInfo)
-    output: 1 if found, else -1
+    output: the index if found, else -1
 */
-int validateData(const CourseInfo *courses, size_t courseCount, CourseInfo courseInfo){
+int validateData(const CourseInfo *courses, const size_t courseCount, CourseInfo courseInfo){
     
     if(linearSearch(courses, courseCount, COURSE_CODE_FLAG, courseInfo.courseCode) != NOT_FOUND) return FOUND;
     if(binarySearch(courses, courseCount, courseInfo.courseID) != NOT_FOUND) return FOUND;
@@ -338,7 +336,7 @@ int validateData(const CourseInfo *courses, size_t courseCount, CourseInfo cours
 }
 
 /*
-    buildRecord: builds a course record with relating fields seperated with commas
+    buildRecord: builds a course record with relating fields separated with commas
     input: the record being build (record), the field to add (s)
 */
 void buildRecord(char *record, const char *s){
@@ -352,7 +350,7 @@ void buildRecord(char *record, const char *s){
     what is being searched for, the searchKey (searchKey)
     output: the index of the found key in the array, or -1 if not found
 */
-int linearSearch(const CourseInfo *courses, size_t courseCount, searchFlag flag, char *searchKey){
+int linearSearch(const CourseInfo *courses, const size_t courseCount, searchFlag flag, char *searchKey){
 
     switch(flag){
         case NAME_FLAG:{
@@ -378,7 +376,7 @@ int linearSearch(const CourseInfo *courses, size_t courseCount, searchFlag flag,
     input: the array to be searched (courses), the size of array (courseCount), the searchKey (searchKey)
     output: the index of the found key in the array, or -1 if not found
 */
-int binarySearch(const CourseInfo *courses, size_t courseCount, int searchKey){
+int binarySearch(const CourseInfo *courses, const size_t courseCount, int searchKey){
     int low = 0, high = courseCount - 1;
     
     while(low <= high){
@@ -393,8 +391,6 @@ int binarySearch(const CourseInfo *courses, size_t courseCount, int searchKey){
         else{
             low = middle + 1;
         }
-
-        
     }
     
     return NOT_FOUND;
@@ -404,7 +400,7 @@ int binarySearch(const CourseInfo *courses, size_t courseCount, int searchKey){
     displayCourseInfo: displays the all courses information 
     input: an array of courses to display (courses), the number of courses to display (courseCount)
 */
-void displayCourseInfo(const CourseInfo *courses, size_t courseCount){
+void displayCourseInfo(const CourseInfo *courses, const size_t courseCount){
     printf("\n%-5s%-20s%-20s%-8s\n", "ID","Name","Code","Term");
     for(size_t i = 0; i < courseCount; i++){
         printf("%-5d%-20s%-20s%-8s\n", courses[i].courseID, courses[i].courseName, courses[i].courseCode, courses[i].term);
@@ -440,7 +436,7 @@ Subject code: 60
 Level code: 141
 Section number: 1
 Semester ('S', 'F', 'W'): s
-Year: 2016
+Year: 2015
 *DUPLICATE COURSE ID OR CODE* UNABLE TO ADD: NEWCOURSE
 
 1. ADD NEW COURSE
@@ -460,13 +456,13 @@ ID   Name                Code                Term
 3. DISPLAY ALL COURSE DATA
 4. EXIT
 Enter option: 1
-Please enter course name: newcourse2
-Faculty code: 01
+Please enter course name: newCourse2
+Faculty code: 2
 Subject code: 2
-Level code: 5
+Level code: 2
 Section number: 2
 Semester ('S', 'F', 'W'): w
-Year: 2018
+Year: 2015 8
 
 1. ADD NEW COURSE
 2. SEARCH FOR COURSE
@@ -479,7 +475,7 @@ ID   Name                Code                Term
 2    PROGRAMMING         0360-141-30         W2015   
 3    ALGEBRA             0362-102-02         S2013   
 4    RELIGION            0898-938-20         F2014   
-6    NEWCOURSE2          0102-005-02         W2018   
+5    NEWCOURSE2          0202-002-02         W2018   
 
 1. ADD NEW COURSE
 2. SEARCH FOR COURSE
@@ -489,17 +485,33 @@ Enter option: 2
 Please enter course name or ID to search for: newcourse2
 
 ID   Name                Code                Term    
-6    NEWCOURSE2          0102-005-02         W2018   
+5    NEWCOURSE2          0202-002-02         W2018   
 
 1. ADD NEW COURSE
 2. SEARCH FOR COURSE
 3. DISPLAY ALL COURSE DATA
 4. EXIT
 Enter option: 2
-Please enter course name or ID to search for: 4
+Please enter course name or ID to search for: math
+COURSE NAME: MATH WAS NOT FOUND
+
+1. ADD NEW COURSE
+2. SEARCH FOR COURSE
+3. DISPLAY ALL COURSE DATA
+4. EXIT
+Enter option: 2
+Please enter course name or ID to search for: 5
 
 ID   Name                Code                Term    
-4    RELIGION            0898-938-20         F2014   
+5    NEWCOURSE2          0202-002-02         W2018   
+
+1. ADD NEW COURSE
+2. SEARCH FOR COURSE
+3. DISPLAY ALL COURSE DATA
+4. EXIT
+Enter option: 2
+Please enter course name or ID to search for: 6
+COURSE ID: 6 WAS NOT FOUND
 
 1. ADD NEW COURSE
 2. SEARCH FOR COURSE
@@ -508,7 +520,15 @@ ID   Name                Code                Term
 Enter option: 4
 ]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures
 [32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures[0m
+$ ls -l
+total 109
+-rwxr-xr-x+ 1 Beesham Beesham 70135 Jul 27 19:56 a.exe
+-rwx---r-x+ 1 Beesham Beesham 13322 Jul 27 19:51 assign4.c
+-rwx------+ 1 Beesham Beesham     0 Jul 27 19:56 assign4.txt
+-rwx------+ 1 Beesham Beesham   124 Jul 22 19:14 input.csv
+]0;/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures
+[32mBeesham@Beesham-Desktop [33m/cygdrive/c/Users/Beesham/Documents/UnversityOfWindsor/Courses/60-141 (Intro to Algo and Programming 2)/Labs/Strings and Structures[0m
 $ exit
 exit
 
-Script done on Thu, Jul 27, 2017  7:18:39 PM
+Script done on Thu, Jul 27, 2017  7:58:36 PM
