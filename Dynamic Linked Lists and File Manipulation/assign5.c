@@ -33,6 +33,7 @@ typedef struct {
     struct StudentInfo *next;
 } StudentInfo;
 
+typedef StudentInfo* StudentInfoPtr;
 
 //prototypes
 void addStudent();
@@ -41,17 +42,17 @@ void searchStudentId();
 void searchStudentName();
 void displayStudentInfo();
 void saveStudentInfo();
-void loadStudentInfo(const char *fileName, StudentInfo *studentInfoPtr);
+void loadStudentInfo(const char *fileName, StudentInfoPtr *studentInfoPtr);
 void terminate();
 
 
 int main(void){
     
     char *fileName = "studentList.txt";
-    StudentInfo *studentInfoPtr = NULL;
+    StudentInfoPtr studentInfoPtr = NULL;   //Head of list (init no nodes)
 
     
-    loadStudentInfo(fileName, studentInfoPtr);
+    loadStudentInfo(fileName, &studentInfoPtr);
 }
 
 /*
@@ -99,42 +100,60 @@ void saveStudentInfo(){
 /*
 
 */
-void loadStudentInfo(const char *fileName, StudentInfo *startStudentInfoPtr){
+void loadStudentInfo (const char *fileName, StudentInfoPtr *startStudentInfoPtr) {
     FILE *filePtr;
 
-    StudentInfo *newStudentInfoPtr = NULL;
-    
-    if((newStudentInfoPtr = malloc(sizeof(StudentInfo))) == NULL){
+    StudentInfoPtr newStudentInfoPtr = NULL;    
+    StudentInfoPtr previousStudentInfoPtr = NULL;
+    StudentInfoPtr currentStudentInfoPtr = *startStudentInfoPtr;
+        
+    //If no space is available return
+    if ((newStudentInfoPtr = malloc(sizeof(StudentInfo))) == NULL) {
         puts("Unable to allocate memory");
         return;
     }
     
-    StudentInfo *previousStudentInfoPtr;
-    StudentInfo *currentStudentInfoPtr = startStudentInfoPtr;
-
-    
-    studentInfoPtr->next = NULL;
-    //studentInfo->courseInfoArr = malloc(sizeof(StudentInfo))
-    
-    
-    if((filePtr = fopen(fileName, "r")) == NULL) puts("FILE COULD NOT BE OPENED");
+    if ((filePtr = fopen(fileName, "r")) == NULL) puts("FILE COULD NOT BE OPENED");
     else{
-        while(1){
-            fscanf(filePtr, "%9s", newStudentInfoPtr->studentId);
-            if(!strcmp(newStudentInfoPtr->studentId, EOF_MARKER)){
-                fclose(filePtr);
-                break;
-            }
-            fscanf(filePtr, "%20s", newStudentInfoPtr->firstName);
-            fscanf(filePtr, "%25s", newStudentInfoPtr->lastName);
-            fscanf(filePtr, "%d", &newStudentInfoPtr->numOfAttentingCourses);
+        while (1) {
             
-            for(int i = 0; i < newStudentInfoPtr->numOfAttentingCourses; i++){
+            //Reads student info
+            {
+                fscanf(filePtr, "%9s", newStudentInfoPtr->studentId);
+                
+                //Tests for end of file marker
+                if (!strcmp(newStudentInfoPtr->studentId, EOF_MARKER)) {
+                    fclose(filePtr);
+                    break;
+                }
+                
+                fscanf(filePtr, "%20s", newStudentInfoPtr->firstName);
+                fscanf(filePtr, "%25s", newStudentInfoPtr->lastName);
+                fscanf(filePtr, "%d", &newStudentInfoPtr->numOfAttentingCourses);
+            }
+            
+            //Reads each course data
+            for (int i = 0; i < newStudentInfoPtr->numOfAttentingCourses; i++) {
                 fscanf(filePtr, "%29s %d", newStudentInfoPtr->courseInfoArr[i].courseName, &(newStudentInfoPtr->courseInfoArr[i]).courseId);
                 printf("%s %d\n", newStudentInfoPtr->courseInfoArr[i].courseName, (newStudentInfoPtr->courseInfoArr[i].courseId));
             }
             
+            newStudentInfoPtr->next = NULL;
             
+            //Loops through the list to find suitable node to insert to
+            while (currentStudentInfoPtr != NULL && newStudentInfoPtr->studentId > currentStudentInfoPtr->studentId) {
+                previousStudentInfoPtr = currentStudentInfoPtr;
+                currentStudentInfoPtr = (StudentInfoPtr) currentStudentInfoPtr->next;
+            }  
+            
+            if (previousStudentInfoPtr == NULL) {
+                newStudentInfoPtr->next = *startStudentInfoPtr;
+                *startStudentInfoPtr = newStudentInfoPtr;
+            }
+            else { 
+                previousStudentInfoPtr->next = newStudentInfoPtr;
+                newStudentInfoPtr->next = currentStudentInfoPtr;
+            }
 
         }
 
@@ -147,4 +166,41 @@ void loadStudentInfo(const char *fileName, StudentInfo *startStudentInfoPtr){
 void terminate(){
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
