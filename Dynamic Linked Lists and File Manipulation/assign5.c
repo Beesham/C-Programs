@@ -40,7 +40,7 @@ void addStudent();
 void deleteStudent();
 void searchStudentId();
 void searchStudentName();
-void displayStudentInfo();
+void displayStudentInfo(StudentInfoPtr *head);
 void saveStudentInfo();
 void loadStudentInfo(const char *fileName, StudentInfoPtr *studentInfoPtr);
 void terminate();
@@ -53,6 +53,7 @@ int main(void){
 
     
     loadStudentInfo(fileName, &studentInfoPtr);
+    displayStudentInfo(&studentInfoPtr);
 }
 
 /*
@@ -84,10 +85,16 @@ void searchStudentName(){
 }
 
 /*
-
+    displayStudentInfo: displays the current student information in a linked list
 */
-void displayStudentInfo(){
-    
+void displayStudentInfo (StudentInfoPtr *head) {
+    StudentInfoPtr currentStudentInfoPtr = *head;
+
+    while (currentStudentInfoPtr != NULL) {
+        currentStudentInfoPtr = (StudentInfoPtr) currentStudentInfoPtr->next;
+        printf("%s", currentStudentInfoPtr->firstName);    
+    }
+
 }
 
 /*
