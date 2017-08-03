@@ -86,15 +86,30 @@ void searchStudentName(){
 }
 
 /*
-    displayStudentInfo: displays the current student information in a linked list
+    displayStudentInfo: displays each student information in a linked list
+    input: the beginning of the linked list (head)
 */
 void displayStudentInfo (StudentInfoPtr *head) {
+    
     StudentInfoPtr currentStudentInfoPtr = *head;
     
     if(currentStudentInfoPtr == NULL) puts("List is empty");
     
+    int count = 1;
+    
+    //Prints each student info
     while (currentStudentInfoPtr != NULL) {
-        printf("%s", currentStudentInfoPtr->firstName);    
+        puts("");
+        printf("%s %d\n", "Student: ", count++);
+        printf("%s\n", currentStudentInfoPtr->studentId);   
+        printf("%s\n", currentStudentInfoPtr->firstName);   
+        printf("%s\n", currentStudentInfoPtr->lastName);    
+        printf("%d\n", currentStudentInfoPtr->numOfAttentingCourses);    
+
+        for (int i = 0; i < currentStudentInfoPtr->numOfAttentingCourses; i++) {
+            printf("%s %d\n", currentStudentInfoPtr->courseInfoArr[i].courseName, currentStudentInfoPtr->courseInfoArr[i].courseId);
+        }
+        
         currentStudentInfoPtr = (StudentInfoPtr) currentStudentInfoPtr->next;
     }
 }
@@ -110,6 +125,7 @@ void saveStudentInfo(){
 
 */
 void loadStudentInfo (const char *fileName, StudentInfoPtr *startStudentInfoPtr) {
+    
     FILE *filePtr;
 
     StudentInfoPtr previousStudentInfoPtr = NULL;
@@ -173,22 +189,21 @@ void loadStudentInfo (const char *fileName, StudentInfoPtr *startStudentInfoPtr)
 
 /*
     terminate: free the allocated space used in the linked list
-    input: the beginning of the list
+    input: the beginning of the list (head)
 */
 void terminate(StudentInfoPtr *head){
+    
     StudentInfoPtr currentStudentInfoPtr = *head;
     StudentInfoPtr hold = NULL;
 
-    if(currentStudentInfoPtr == NULL) puts("List is empty");
-    else{
-        while (currentStudentInfoPtr != NULL) {
-            hold = (StudentInfoPtr) currentStudentInfoPtr->next;
-            currentStudentInfoPtr = (StudentInfoPtr) currentStudentInfoPtr->next;
-            free(hold);
-        }
-        
-        *head = NULL;
+    //de-allocates memory used
+    while (currentStudentInfoPtr != NULL) {
+        hold = (StudentInfoPtr) currentStudentInfoPtr->next;
+        currentStudentInfoPtr = (StudentInfoPtr) currentStudentInfoPtr->next;
+        free(hold);
     }
+    
+    *head = NULL;
 }
 
 
