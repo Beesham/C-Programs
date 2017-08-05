@@ -44,7 +44,10 @@ void displayStudentInfo(StudentInfoPtr *head);
 void saveStudentInfo();
 void loadStudentInfo(const char *fileName, StudentInfoPtr *studentInfoPtr);
 void terminate();
+void convertToUppercase(char *string);
 
+//TODO: validate studnetID uniqueness
+//TODO: sort studnets by ID
 
 int main(void){
     
@@ -52,15 +55,71 @@ int main(void){
     StudentInfoPtr studentInfoPtr = NULL;   //Head of list (init no nodes)
 
     
-    loadStudentInfo(fileName, &studentInfoPtr);
-    displayStudentInfo(&studentInfoPtr);
-    terminate(&studentInfoPtr);
+    loadStudentInfo (fileName, &studentInfoPtr);
+    displayStudentInfo (&studentInfoPtr);
+    addStudent (&studentInfoPtr);
+    displayStudentInfo (&studentInfoPtr);
+    terminate (&studentInfoPtr);
 }
 
 /*
-
+    addStudent: adds a student to the linked list
+    input: the beginning of the linked list
 */
-void addStudent(){
+void addStudent (StudentInfoPtr *head) {
+    
+    StudentInfoPtr previousStudentInfoPtr = NULL;
+    StudentInfoPtr currentStudentInfoPtr = *head;
+    
+    StudentInfoPtr newStudentInfoPtr = NULL;    
+
+    //If no space is available return
+    if ((newStudentInfoPtr = malloc(sizeof(StudentInfo))) == NULL) {
+        puts("Unable to allocate memory");
+        return;
+    }
+    
+    //Reads student info
+    {
+        printf("%s", "Student ID (9 digits): ");
+        scanf("%9s", newStudentInfoPtr->studentId);
+        
+        printf("%s", "Student first name (20 characters max): ");
+        scanf("%20s", newStudentInfoPtr->firstName);
+        
+        printf("%s", "Student last name (25 characters max): ");
+        scanf("%25s", newStudentInfoPtr->lastName);
+        
+        convertToUppercase(newStudentInfoPtr->firstName);
+        convertToUppercase(newStudentInfoPtr->lastName);
+        
+        printf("%s", "How many courses is the student attending: ");
+        scanf("%d", &newStudentInfoPtr->numOfAttentingCourses);
+    }
+    
+    //Reads each course data
+    for (int i = 0; i < newStudentInfoPtr->numOfAttentingCourses; i++) {
+        printf("%s", "Enter course info as CODE NUMBER e.g MATH 101: ");
+        scanf("%29s %d", newStudentInfoPtr->courseInfoArr[i].courseName, &(newStudentInfoPtr->courseInfoArr[i]).courseId);
+    }
+
+    newStudentInfoPtr->next = NULL;
+    
+    //Loops through the list to find suitable node to insert to
+    while (currentStudentInfoPtr != NULL && 
+            strtol(newStudentInfoPtr->studentId, NULL, 10) > strtol(currentStudentInfoPtr->studentId, NULL, 10)) {
+        previousStudentInfoPtr = currentStudentInfoPtr;
+        currentStudentInfoPtr = (StudentInfoPtr) currentStudentInfoPtr->next;
+    }  
+    
+    if (previousStudentInfoPtr == NULL) {
+        newStudentInfoPtr->next = *head;
+        *head = newStudentInfoPtr;
+    }
+    else { 
+        previousStudentInfoPtr->next = newStudentInfoPtr;
+        newStudentInfoPtr->next = currentStudentInfoPtr;
+    }
 
 }
 
@@ -156,6 +215,10 @@ void loadStudentInfo (const char *fileName, StudentInfoPtr *startStudentInfoPtr)
                 
                 fscanf(filePtr, "%20s", newStudentInfoPtr->firstName);
                 fscanf(filePtr, "%25s", newStudentInfoPtr->lastName);
+                
+                convertToUppercase(newStudentInfoPtr->firstName);
+                convertToUppercase(newStudentInfoPtr->lastName);
+               
                 fscanf(filePtr, "%d", &newStudentInfoPtr->numOfAttentingCourses);
             }
             
@@ -206,7 +269,16 @@ void terminate(StudentInfoPtr *head){
     *head = NULL;
 }
 
-
+/*
+    convertToUppercase: converts a string to all uppercase
+    input: the string to convert (string)
+*/
+void convertToUppercase(char *string){
+    while(*string != '\0'){
+        *string = toupper(*string);
+        string++;
+    }    
+}
 
 
 
