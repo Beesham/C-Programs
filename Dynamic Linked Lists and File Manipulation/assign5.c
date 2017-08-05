@@ -38,7 +38,7 @@ typedef StudentInfo* StudentInfoPtr;
 //prototypes
 void addStudent();
 void deleteStudent();
-void searchStudentId();
+StudentInfoPtr searchStudentId(StudentInfoPtr *head, const char *studentId);
 void searchStudentName();
 void displayStudentInfo(StudentInfoPtr *head);
 void saveStudentInfo();
@@ -47,7 +47,7 @@ void terminate();
 void convertToUppercase(char *string);
 
 //TODO: validate studnetID uniqueness
-//TODO: sort studnets by ID
+//TODO: sort students by ID
 
 int main(void){
     
@@ -57,8 +57,11 @@ int main(void){
     
     loadStudentInfo (fileName, &studentInfoPtr);
     displayStudentInfo (&studentInfoPtr);
-    addStudent (&studentInfoPtr);
+    //addStudent (&studentInfoPtr);
     displayStudentInfo (&studentInfoPtr);
+    StudentInfoPtr stu = searchStudentId(&studentInfoPtr, "111111111");
+    if(stu != NULL) printf("%s", stu->firstName);
+    
     terminate (&studentInfoPtr);
 }
 
@@ -66,7 +69,7 @@ int main(void){
     addStudent: adds a student to the linked list
     input: the beginning of the linked list
 */
-void addStudent (StudentInfoPtr *head) {
+void addStudent(StudentInfoPtr *head) {
     
     StudentInfoPtr previousStudentInfoPtr = NULL;
     StudentInfoPtr currentStudentInfoPtr = *head;
@@ -126,21 +129,33 @@ void addStudent (StudentInfoPtr *head) {
 /*
 
 */
-void deleteStudent(){
+void deleteStudent() {
     
+}
+
+/*
+    searchStudentId: searches the linked list for a student 
+    input: the beginning of the linked list (head), the id to be searched (studentId)
+    output: the found student or NULL if not found
+*/
+StudentInfoPtr searchStudentId(StudentInfoPtr *head, const char *studentId) {
+    
+    StudentInfoPtr currentStudentInfoPtr = *head;
+    
+    while (currentStudentInfoPtr != NULL) {
+        if(!strcmp(currentStudentInfoPtr->studentId, studentId)){
+            return currentStudentInfoPtr;
+        }
+        currentStudentInfoPtr = (StudentInfoPtr) currentStudentInfoPtr->next;
+    }  
+    
+    return NULL;
 }
 
 /*
 
 */
-void searchStudentId(){
-    
-}
-
-/*
-
-*/
-void searchStudentName(){
+void searchStudentName() {
     
 }
 
@@ -148,7 +163,7 @@ void searchStudentName(){
     displayStudentInfo: displays each student information in a linked list
     input: the beginning of the linked list (head)
 */
-void displayStudentInfo (StudentInfoPtr *head) {
+void displayStudentInfo(StudentInfoPtr *head) {
     
     StudentInfoPtr currentStudentInfoPtr = *head;
     
@@ -176,14 +191,14 @@ void displayStudentInfo (StudentInfoPtr *head) {
 /*
 
 */
-void saveStudentInfo(){
+void saveStudentInfo() {
     
 }
 
 /*
 
 */
-void loadStudentInfo (const char *fileName, StudentInfoPtr *startStudentInfoPtr) {
+void loadStudentInfo(const char *fileName, StudentInfoPtr *startStudentInfoPtr) {
     
     FILE *filePtr;
 
