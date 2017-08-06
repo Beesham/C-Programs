@@ -39,12 +39,12 @@ typedef StudentInfo* StudentInfoPtr;
 void addStudent();
 void deleteStudent();
 StudentInfoPtr searchStudentId(StudentInfoPtr *head, const char *studentId);
-void searchStudentName();
+StudentInfoPtr searchStudentName(StudentInfoPtr *head, const char *studentLastName);
 void displayStudentInfo(StudentInfoPtr *head);
 void saveStudentInfo();
 void loadStudentInfo(const char *fileName, StudentInfoPtr *studentInfoPtr);
 void terminate();
-void convertToUppercase(char *string);
+void formatName(char *string);
 
 //TODO: validate studnetID uniqueness
 //TODO: sort students by ID
@@ -56,11 +56,14 @@ int main(void){
 
     
     loadStudentInfo (fileName, &studentInfoPtr);
-    displayStudentInfo (&studentInfoPtr);
+    //displayStudentInfo (&studentInfoPtr);
     //addStudent (&studentInfoPtr);
     displayStudentInfo (&studentInfoPtr);
     StudentInfoPtr stu = searchStudentId(&studentInfoPtr, "111111111");
     if(stu != NULL) printf("%s", stu->firstName);
+    
+    StudentInfoPtr stu2 = searchStudentName(&studentInfoPtr, "Porter");
+    if(stu2 != NULL) printf("%s", stu2->lastName);
     
     terminate (&studentInfoPtr);
 }
@@ -93,8 +96,8 @@ void addStudent(StudentInfoPtr *head) {
         printf("%s", "Student last name (25 characters max): ");
         scanf("%25s", newStudentInfoPtr->lastName);
         
-        convertToUppercase(newStudentInfoPtr->firstName);
-        convertToUppercase(newStudentInfoPtr->lastName);
+        formatName(newStudentInfoPtr->firstName);
+        formatName(newStudentInfoPtr->lastName);
         
         printf("%s", "How many courses is the student attending: ");
         scanf("%d", &newStudentInfoPtr->numOfAttentingCourses);
@@ -134,7 +137,7 @@ void deleteStudent() {
 }
 
 /*
-    searchStudentId: searches the linked list for a student 
+    searchStudentId: searches the linked list for a student by id
     input: the beginning of the linked list (head), the id to be searched (studentId)
     output: the found student or NULL if not found
 */
@@ -153,10 +156,22 @@ StudentInfoPtr searchStudentId(StudentInfoPtr *head, const char *studentId) {
 }
 
 /*
-
+    searchStudentName: searches the linked list for a student by last name
+    input: the beginning of the linked list (head), the last name of student to be searched (studentLastName)
+    output: the found student or NULL if not found
 */
-void searchStudentName() {
+StudentInfoPtr searchStudentName(StudentInfoPtr *head, const char *studentLastName) {
     
+    StudentInfoPtr currentStudentInfoPtr = *head;
+    
+    while (currentStudentInfoPtr != NULL) {
+        if(!strcmp(currentStudentInfoPtr->lastName, studentLastName)){
+            return currentStudentInfoPtr;
+        }
+        currentStudentInfoPtr = (StudentInfoPtr) currentStudentInfoPtr->next;
+    }  
+    
+    return NULL;
 }
 
 /*
@@ -231,8 +246,8 @@ void loadStudentInfo(const char *fileName, StudentInfoPtr *startStudentInfoPtr) 
                 fscanf(filePtr, "%20s", newStudentInfoPtr->firstName);
                 fscanf(filePtr, "%25s", newStudentInfoPtr->lastName);
                 
-                convertToUppercase(newStudentInfoPtr->firstName);
-                convertToUppercase(newStudentInfoPtr->lastName);
+                formatName(newStudentInfoPtr->firstName);
+                formatName(newStudentInfoPtr->lastName);
                
                 fscanf(filePtr, "%d", &newStudentInfoPtr->numOfAttentingCourses);
             }
@@ -285,14 +300,20 @@ void terminate(StudentInfoPtr *head){
 }
 
 /*
-    convertToUppercase: converts a string to all uppercase
+    formatName: converts a string to have the first letter uppercase
     input: the string to convert (string)
 */
-void convertToUppercase(char *string){
-    while(*string != '\0'){
-        *string = toupper(*string);
-        string++;
+void formatName(char *string){
+    
+    char *temp = string;
+    
+    while(*temp != '\0'){
+        *temp = tolower(*temp);
+        temp++;
     }    
+    
+    *string = toupper(*string);
+    
 }
 
 

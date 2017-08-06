@@ -11,8 +11,8 @@ Simpson
 1
 CMSC 412
 222222222
-Blep
-Simpson
+bleps
+simpson
 1
 CMSC 412
 ***
