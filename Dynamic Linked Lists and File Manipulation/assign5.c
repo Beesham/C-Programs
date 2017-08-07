@@ -37,7 +37,7 @@ typedef StudentInfo* StudentInfoPtr;
 
 //prototypes
 void addStudent();
-void deleteStudent();
+void deleteStudent(StudentInfoPtr *head, const char *studentId);
 StudentInfoPtr searchStudentId(StudentInfoPtr *head, const char *studentId);
 StudentInfoPtr searchStudentName(StudentInfoPtr *head, const char *studentLastName);
 void displayStudentInfo(StudentInfoPtr *head);
@@ -59,11 +59,18 @@ int main(void){
     //displayStudentInfo (&studentInfoPtr);
     //addStudent (&studentInfoPtr);
     displayStudentInfo (&studentInfoPtr);
+    
     StudentInfoPtr stu = searchStudentId(&studentInfoPtr, "111111111");
     if(stu != NULL) printf("%s", stu->firstName);
     
     StudentInfoPtr stu2 = searchStudentName(&studentInfoPtr, "Porter");
     if(stu2 != NULL) printf("%s", stu2->lastName);
+
+    puts("");
+    
+    deleteStudent(&studentInfoPtr, "111111111");
+    displayStudentInfo (&studentInfoPtr);
+
     
     terminate (&studentInfoPtr);
 }
@@ -130,10 +137,42 @@ void addStudent(StudentInfoPtr *head) {
 }
 
 /*
-
+    deleteStudent: deletes a student from the linked list by id
+    input: the beginning of the linked list (head), the id to be deleted (studentId)
+    output:
 */
-void deleteStudent() {
+void deleteStudent(StudentInfoPtr *head, const char *studentId) {
+
+    StudentInfoPtr currentStudentInfoPtr = *head;
+    StudentInfoPtr previousStudentInfoPtr = NULL;
     
+    if(!strcmp(currentStudentInfoPtr->studentId, studentId)){
+        StudentInfoPtr hold = currentStudentInfoPtr;
+        head = currentStudentInfoPtr->next;
+        free(hold);
+    }
+    else {  
+        
+        previousStudentInfoPtr = currentStudentInfoPtr;
+        currentStudentInfoPtr = (StudentInfoPtr) currentStudentInfoPtr->next;        
+        
+        while(currentStudentInfoPtr != NULL) {
+            if(!strcmp(currentStudentInfoPtr->studentId, studentId)) {
+                break;
+            }  
+            
+            previousStudentInfoPtr = currentStudentInfoPtr;
+            currentStudentInfoPtr = (StudentInfoPtr) currentStudentInfoPtr->next;     
+        }  
+        
+        StudentInfoPtr hold = currentStudentInfoPtr;
+        previousStudentInfoPtr->next = currentStudentInfoPtr->next;
+        currentStudentInfoPtr = currentStudentInfoPtr->next;
+        free(hold);
+    }
+    
+    
+
 }
 
 /*
