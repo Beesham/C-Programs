@@ -71,6 +71,7 @@ int main(void){
     deleteStudent(&studentInfoPtr, "111111111");
     displayStudentInfo (&studentInfoPtr);
 
+    saveStudentInfo(&studentInfoPtr);
     
     terminate (&studentInfoPtr);
 }
@@ -243,14 +244,41 @@ void displayStudentInfo(StudentInfoPtr *head) {
 }
 
 /*
-
+    saveStudentInfo: saves the linked list to a file
+    input: the beginning of the linked list (head)
 */
-void saveStudentInfo() {
+void saveStudentInfo(StudentInfoPtr *head) {
     
+    char *fileName = "inputStudents.txt";
+    FILE *filePtr = NULL;
+    
+    if((filePtr = fopen(fileName, "w")) == NULL) {
+        puts("ERR IN WRITING TO FILE | FILE COULD NOT BE OPENED");
+    }
+    else {
+        
+        StudentInfoPtr currentStudentInfoPtr = *head;
+        
+        //writes the student infos to a file
+        while(currentStudentInfoPtr != NULL) {
+            
+            fprintf(filePtr, "%s\n%s\n%s\n%d\n", 
+                                currentStudentInfoPtr->studentId,
+                                currentStudentInfoPtr->firstName,
+                                currentStudentInfoPtr->lastName,
+                                currentStudentInfoPtr->numOfAttentingCourses);
+                                
+            for(int i = 0; i < currentStudentInfoPtr->numOfAttentingCourses; i++){
+                fprintf(filePtr, "%s %d\n", currentStudentInfoPtr->courseInfoArr[i].courseName, currentStudentInfoPtr->courseInfoArr[i].courseId);
+            }            
+            currentStudentInfoPtr = currentStudentInfoPtr->next;
+        }
+    }
 }
 
 /*
-
+    loadStudentInfo: reads student info from a sorted text file into a linked list
+    input: the file name (fileName), the beginning of the linked list (startStudentInfoPtr)
 */
 void loadStudentInfo(const char *fileName, StudentInfoPtr *startStudentInfoPtr) {
     
