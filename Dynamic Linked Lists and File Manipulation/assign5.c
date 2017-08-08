@@ -30,20 +30,20 @@ typedef struct studentInfo {
     char lastName[LAST_NAME_LEN + 1];
     int numOfAttentingCourses;
     CourseInfo courseInfoArr[MAX_COURSES];
-    struct StudentInfo *next;
+    struct studentInfo *next;
 } StudentInfo;
 
 typedef StudentInfo* StudentInfoPtr;
 
 //prototypes
-void addStudent();
+void addStudent(StudentInfoPtr *head);
 void deleteStudent(StudentInfoPtr *head, const char *studentId);
 StudentInfoPtr searchStudentId(StudentInfoPtr *head, const char *studentId);
 StudentInfoPtr searchStudentName(StudentInfoPtr *head, const char *studentLastName);
 void displayStudentInfo(StudentInfoPtr *head);
-void saveStudentInfo();
+void saveStudentInfo(StudentInfoPtr *head);
 void loadStudentInfo(const char *fileName, StudentInfoPtr *studentInfoPtr);
-void terminate();
+void terminate(StudentInfoPtr *head);
 void formatName(char *string);
 
 //TODO: validate studnetID uniqueness
@@ -149,7 +149,7 @@ void deleteStudent(StudentInfoPtr *head, const char *studentId) {
     
     if(!strcmp(currentStudentInfoPtr->studentId, studentId)){
         StudentInfoPtr hold = currentStudentInfoPtr;
-        head = currentStudentInfoPtr->next;
+        *head = currentStudentInfoPtr->next;
         free(hold);
     }
     else {  
