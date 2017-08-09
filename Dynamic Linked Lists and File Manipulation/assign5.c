@@ -36,7 +36,7 @@ typedef struct studentInfo {
 typedef StudentInfo* StudentInfoPtr;
 
 //prototypes
-void addStudent(StudentInfoPtr *head);
+void addStudent(StudentInfoPtr *head, StudentInfoPtr student);
 void deleteStudent(StudentInfoPtr *head, const char *studentId);
 StudentInfoPtr searchStudentId(StudentInfoPtr *head, const char *studentId);
 StudentInfoPtr searchStudentName(StudentInfoPtr *head, const char *studentLastName);
@@ -45,8 +45,8 @@ void saveStudentInfo(StudentInfoPtr *head);
 void loadStudentInfo(const char *fileName, StudentInfoPtr *studentInfoPtr);
 void terminate(StudentInfoPtr *head);
 void formatName(char *string);
+StudentInfoPtr promptForStudentInfo();
 
-//TODO: validate studnetID uniqueness
 //TODO: sort students by ID
 
 int main(void){
@@ -56,20 +56,23 @@ int main(void){
 
     
     loadStudentInfo (fileName, &studentInfoPtr);
+    
+    printf("%s", studentInfoPtr->firstName);
+    
     //displayStudentInfo (&studentInfoPtr);
-    //addStudent (&studentInfoPtr);
+    addStudent (&studentInfoPtr, promptForStudentInfo());
     displayStudentInfo (&studentInfoPtr);
     
-    StudentInfoPtr stu = searchStudentId(&studentInfoPtr, "111111111");
-    if(stu != NULL) printf("%s", stu->firstName);
+    //StudentInfoPtr stu = searchStudentId(&studentInfoPtr, "111111111");
+    //if(stu != NULL) printf("%s", stu->firstName);
     
-    StudentInfoPtr stu2 = searchStudentName(&studentInfoPtr, "Porter");
-    if(stu2 != NULL) printf("%s", stu2->lastName);
+    //StudentInfoPtr stu2 = searchStudentName(&studentInfoPtr, "Porter");
+    //if(stu2 != NULL) printf("%s", stu2->lastName);
 
-    puts("");
+    //puts("");
     
-    deleteStudent(&studentInfoPtr, "111111111");
-    displayStudentInfo (&studentInfoPtr);
+    //deleteStudent(&studentInfoPtr, "111111111");
+    //displayStudentInfo (&studentInfoPtr);
 
     saveStudentInfo(&studentInfoPtr);
     
@@ -77,20 +80,17 @@ int main(void){
 }
 
 /*
-    addStudent: adds a student to the linked list
-    input: the beginning of the linked list
+    promptForStudentInfo: prompts the user for a students info and stores it in a struct
+    output: a pointer to the struct in memory
 */
-void addStudent(StudentInfoPtr *head) {
-    
-    StudentInfoPtr previousStudentInfoPtr = NULL;
-    StudentInfoPtr currentStudentInfoPtr = *head;
+StudentInfoPtr promptForStudentInfo(){
     
     StudentInfoPtr newStudentInfoPtr = NULL;    
-
+    
     //If no space is available return
     if ((newStudentInfoPtr = malloc(sizeof(StudentInfo))) == NULL) {
         puts("Unable to allocate memory");
-        return;
+        return NULL;
     }
     
     //Reads student info
@@ -119,6 +119,20 @@ void addStudent(StudentInfoPtr *head) {
 
     newStudentInfoPtr->next = NULL;
     
+    return newStudentInfoPtr;
+}
+
+/*
+    addStudent: adds a student to the linked list
+    input: the beginning of the linked list
+*/
+void addStudent(StudentInfoPtr *head, StudentInfoPtr student) {
+    
+    StudentInfoPtr previousStudentInfoPtr = NULL;
+    StudentInfoPtr currentStudentInfoPtr = *head;
+    
+    StudentInfoPtr newStudentInfoPtr = student;    
+
     //Loops through the list to find suitable node to insert to
     while (currentStudentInfoPtr != NULL && 
             strtol(newStudentInfoPtr->studentId, NULL, 10) > strtol(currentStudentInfoPtr->studentId, NULL, 10)) {
@@ -134,7 +148,6 @@ void addStudent(StudentInfoPtr *head) {
         previousStudentInfoPtr->next = newStudentInfoPtr;
         newStudentInfoPtr->next = currentStudentInfoPtr;
     }
-
 }
 
 /*
@@ -171,9 +184,6 @@ void deleteStudent(StudentInfoPtr *head, const char *studentId) {
         currentStudentInfoPtr = currentStudentInfoPtr->next;
         free(hold);
     }
-    
-    
-
 }
 
 /*
@@ -287,8 +297,7 @@ void loadStudentInfo(const char *fileName, StudentInfoPtr *startStudentInfoPtr) 
     StudentInfoPtr previousStudentInfoPtr = NULL;
     StudentInfoPtr currentStudentInfoPtr = *startStudentInfoPtr;
         
-    
-    
+     
     if ((filePtr = fopen(fileName, "r")) == NULL) puts("FILE COULD NOT BE OPENED");
     else{
         while (1) {
@@ -323,26 +332,15 @@ void loadStudentInfo(const char *fileName, StudentInfoPtr *startStudentInfoPtr) 
             for (int i = 0; i < newStudentInfoPtr->numOfAttentingCourses; i++) {
                 fscanf(filePtr, "%29s %d", newStudentInfoPtr->courseInfoArr[i].courseName, &(newStudentInfoPtr->courseInfoArr[i]).courseId);
             }
-
+            
             printf("%s\n", newStudentInfoPtr->firstName);
-
+            
             newStudentInfoPtr->next = NULL;
             
-            //Loops through the list to find suitable node to insert to
-            while (currentStudentInfoPtr != NULL && 
-                    strtol(newStudentInfoPtr->studentId, NULL, 10) > strtol(currentStudentInfoPtr->studentId, NULL, 10)) {
-                previousStudentInfoPtr = currentStudentInfoPtr;
-                currentStudentInfoPtr = (StudentInfoPtr) currentStudentInfoPtr->next;
-            }  
-            
-            if (previousStudentInfoPtr == NULL) {
-                newStudentInfoPtr->next = *startStudentInfoPtr;
-                *startStudentInfoPtr = newStudentInfoPtr;
+            if(searchStudentId(startStudentInfoPtr, newStudentInfoPtr->studentId) == NULL) {               
+                addStudent(startStudentInfoPtr, newStudentInfoPtr);
             }
-            else { 
-                previousStudentInfoPtr->next = newStudentInfoPtr;
-                newStudentInfoPtr->next = currentStudentInfoPtr;
-            }
+            else printf("%s %s", "Duplicate student ID: ", newStudentInfoPtr->studentId);
         }
     }
 }
@@ -367,7 +365,7 @@ void terminate(StudentInfoPtr *head){
 }
 
 /*
-    formatName: converts a string to have the first letter uppercase
+    formatName: converts a string to have the first letter upper-case
     input: the string to convert (string)
 */
 void formatName(char *string){
@@ -380,7 +378,6 @@ void formatName(char *string){
     }    
     
     *string = toupper(*string);
-    
 }
 
 
