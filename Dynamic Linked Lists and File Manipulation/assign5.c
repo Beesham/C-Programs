@@ -35,6 +35,10 @@ typedef struct studentInfo {
 
 typedef StudentInfo* StudentInfoPtr;
 
+enum choice{
+    ADD = 1, DELETE, DISPLAY, SEARCH, SAVE, EXIT
+};
+
 //prototypes
 void addStudent(StudentInfoPtr *head, StudentInfoPtr student);
 void deleteStudent(StudentInfoPtr *head, const char *studentId);
@@ -45,45 +49,93 @@ void saveStudentInfo(StudentInfoPtr *head);
 void loadStudentInfo(const char *fileName, StudentInfoPtr *studentInfoPtr);
 void terminate(StudentInfoPtr *head);
 void formatName(char *string);
+void convertToUppercase(char *string);
 StudentInfoPtr promptForStudentInfo();
+int menu();
 
-//TODO: sort students by ID
+//TODO: prompt for delete, search
+//TODO: validate saving data, prompt before exit
+//TODO: display student after search
+//TODO: fix delete func
 
 int main(void){
     
     char *fileName = "studentList.txt";
     StudentInfoPtr studentInfoPtr = NULL;   //Head of list (init no nodes)
 
-    
     loadStudentInfo (fileName, &studentInfoPtr);
+            
+    int choice;
     
-    printf("%s", studentInfoPtr->firstName);
-    
-    //displayStudentInfo (&studentInfoPtr);
-    addStudent (&studentInfoPtr, promptForStudentInfo());
-    displayStudentInfo (&studentInfoPtr);
-    
-    //StudentInfoPtr stu = searchStudentId(&studentInfoPtr, "111111111");
-    //if(stu != NULL) printf("%s", stu->firstName);
-    
-    //StudentInfoPtr stu2 = searchStudentName(&studentInfoPtr, "Porter");
-    //if(stu2 != NULL) printf("%s", stu2->lastName);
-
-    //puts("");
-    
-    //deleteStudent(&studentInfoPtr, "111111111");
-    //displayStudentInfo (&studentInfoPtr);
-
-    saveStudentInfo(&studentInfoPtr);
+    while((choice = menu()) != EXIT) {
+        switch(choice) {
+            case ADD:{
+                addStudent (&studentInfoPtr, promptForStudentInfo());
+                break;
+            }
+            
+            case DELETE:{
+                deleteStudent(&studentInfoPtr, "111111111");
+                break;
+            }          
+            
+            case DISPLAY:{
+                displayStudentInfo (&studentInfoPtr);
+                break;          
+            }
+            
+            case SEARCH:{
+                searchStudentId(&studentInfoPtr, "111111111");
+                break;               
+            }
+            
+            case SAVE:{
+                saveStudentInfo(&studentInfoPtr);
+                break;               
+            }
+            
+            default: puts("UNSUPPORTED ACTION!!");
+        }
+        
+        choice = menu();
+    }
     
     terminate (&studentInfoPtr);
+
+    return 0;
+}
+
+/*
+    menu: displays a menu and prompt to the user
+    output: the choice made by user
+*/
+int menu(){
+    
+    char choiceStr[1];;
+    int choice;
+    
+    puts("");
+    puts("1. Add Student");
+    puts("2. Delete Student");
+    puts("3. Display Students");
+    puts("4. Search Student");
+    puts("5. Save");
+    puts("6. Exit");
+    
+    printf("%s", "Choice: ");
+    scanf("%2s", choiceStr);
+    getchar();
+    
+    choice = strtol(choiceStr, NULL, 10);
+    
+    return (int) choice;
 }
 
 /*
     promptForStudentInfo: prompts the user for a students info and stores it in a struct
     output: a pointer to the struct in memory
 */
-StudentInfoPtr promptForStudentInfo(){
+StudentInfoPtr promptForStudentInfo() {
     
     StudentInfoPtr newStudentInfoPtr = NULL;    
     
@@ -115,6 +167,7 @@ StudentInfoPtr promptForStudentInfo(){
     for (int i = 0; i < newStudentInfoPtr->numOfAttentingCourses; i++) {
         printf("%s", "Enter course info as CODE NUMBER e.g MATH 101: ");
         scanf("%29s %d", newStudentInfoPtr->courseInfoArr[i].courseName, &(newStudentInfoPtr->courseInfoArr[i]).courseId);
+        convertToUppercase(newStudentInfoPtr->courseInfoArr[i].courseName);
     }
 
     newStudentInfoPtr->next = NULL;
@@ -283,6 +336,8 @@ void saveStudentInfo(StudentInfoPtr *head) {
             }            
             currentStudentInfoPtr = currentStudentInfoPtr->next;
         }
+        
+        fclose(filePtr);
     }
 }
 
@@ -292,15 +347,11 @@ void saveStudentInfo(StudentInfoPtr *head) {
 */
 void loadStudentInfo(const char *fileName, StudentInfoPtr *startStudentInfoPtr) {
     
-    FILE *filePtr;
-
-    StudentInfoPtr previousStudentInfoPtr = NULL;
-    StudentInfoPtr currentStudentInfoPtr = *startStudentInfoPtr;
-        
+    FILE *filePtr;        
      
     if ((filePtr = fopen(fileName, "r")) == NULL) puts("FILE COULD NOT BE OPENED");
-    else{
-        while (1) {
+    else {
+        while(1) {
             StudentInfoPtr newStudentInfoPtr = NULL;    
 
             //If no space is available return
@@ -331,6 +382,7 @@ void loadStudentInfo(const char *fileName, StudentInfoPtr *startStudentInfoPtr) 
             //Reads each course data
             for (int i = 0; i < newStudentInfoPtr->numOfAttentingCourses; i++) {
                 fscanf(filePtr, "%29s %d", newStudentInfoPtr->courseInfoArr[i].courseName, &(newStudentInfoPtr->courseInfoArr[i]).courseId);
+                convertToUppercase(newStudentInfoPtr->courseInfoArr[i].courseName);
             }
             
             printf("%s\n", newStudentInfoPtr->firstName);
@@ -342,6 +394,8 @@ void loadStudentInfo(const char *fileName, StudentInfoPtr *startStudentInfoPtr) 
             }
             else printf("%s %s", "Duplicate student ID: ", newStudentInfoPtr->studentId);
         }
+        
+        fclose(filePtr);
     }
 }
 
@@ -349,7 +403,7 @@ void loadStudentInfo(const char *fileName, StudentInfoPtr *startStudentInfoPtr) 
     terminate: free the allocated space used in the linked list
     input: the beginning of the list (head)
 */
-void terminate(StudentInfoPtr *head){
+void terminate(StudentInfoPtr *head) {
     
     StudentInfoPtr currentStudentInfoPtr = *head;
     StudentInfoPtr hold = NULL;
@@ -368,7 +422,7 @@ void terminate(StudentInfoPtr *head){
     formatName: converts a string to have the first letter upper-case
     input: the string to convert (string)
 */
-void formatName(char *string){
+void formatName(char *string) {
     
     char *temp = string;
     
@@ -380,6 +434,17 @@ void formatName(char *string){
     *string = toupper(*string);
 }
 
+/*
+    convertToUppercase: converts a string to all uppercase
+    input: the string to convert (string)
+*/
+void convertToUppercase(char *string) {
+    
+    while(*string != '\0'){
+        *string = toupper(*string);
+        string++;
+    }    
+}
 
 
 
