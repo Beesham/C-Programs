@@ -53,10 +53,8 @@ void convertToUppercase(char *string);
 StudentInfoPtr promptForStudentInfo();
 int menu();
 
-//TODO: prompt for delete, search
 //TODO: validate saving data, prompt before exit
 //TODO: display student after search
-//TODO: fix delete func
 
 int main(void){
     
@@ -75,7 +73,10 @@ int main(void){
             }
             
             case DELETE:{
-                deleteStudent(&studentInfoPtr, "111111111");
+                char input[STUDENT_ID_LEN + 1];
+                printf("%s", "Please enter student id to delete: ");
+                scanf("%9s", input);
+                if(input != NULL) deleteStudent(&studentInfoPtr, input);
                 break;
             }          
             
@@ -85,7 +86,10 @@ int main(void){
             }
             
             case SEARCH:{
-                searchStudentId(&studentInfoPtr, "111111111");
+                char input[STUDENT_ID_LEN + 1];
+                printf("%s", "Please enter student id to search: ");
+                scanf("%9s", input);
+                if(input != NULL) searchStudentId(&studentInfoPtr, input);
                 break;               
             }
             
@@ -95,9 +99,7 @@ int main(void){
             }
             
             default: puts("UNSUPPORTED ACTION!!");
-        }
-        
-        choice = menu();
+        }        
     }
     
     terminate (&studentInfoPtr);
@@ -111,8 +113,8 @@ int main(void){
 */
 int menu(){
     
-    char choiceStr[1];;
-    int choice;
+    char choiceStr[2];
+    int choice = 0;
     
     puts("");
     puts("1. Add Student");
@@ -123,7 +125,7 @@ int menu(){
     puts("6. Exit");
     
     printf("%s", "Choice: ");
-    scanf("%2s", choiceStr);
+    scanf("%1s", choiceStr);
     getchar();
     
     choice = strtol(choiceStr, NULL, 10);
