@@ -17,6 +17,9 @@
 
 #define EOF_MARKER "***"
 
+#define FLAG_DISP_ALL 0
+#define FLAG_DISP 1
+
 //Course info struct
 typedef struct courseInfo {
     int courseId;
@@ -44,7 +47,7 @@ void addStudent(StudentInfoPtr *head, StudentInfoPtr student);
 void deleteStudent(StudentInfoPtr *head, const char *studentId);
 StudentInfoPtr searchStudentId(StudentInfoPtr *head, const char *studentId);
 StudentInfoPtr searchStudentName(StudentInfoPtr *head, const char *studentLastName);
-void displayStudentInfo(StudentInfoPtr *head);
+void displayStudentInfo(StudentInfoPtr *head, int FLAG, StudentInfoPtr studentInfo);
 void saveStudentInfo(StudentInfoPtr *head);
 void loadStudentInfo(const char *fileName, StudentInfoPtr *studentInfoPtr);
 void terminate(StudentInfoPtr *head);
@@ -54,7 +57,7 @@ StudentInfoPtr promptForStudentInfo();
 int menu();
 
 //TODO: validate saving data, prompt before exit
-//TODO: display student after search
+//TODO: fix seg. fault search non exist val
 
 int main(void){
     
@@ -81,7 +84,7 @@ int main(void){
             }          
             
             case DISPLAY:{
-                displayStudentInfo (&studentInfoPtr);
+                displayStudentInfo(&studentInfoPtr, FLAG_DISP_ALL, NULL);
                 break;          
             }
             
@@ -89,7 +92,9 @@ int main(void){
                 char input[STUDENT_ID_LEN + 1];
                 printf("%s", "Please enter student id to search: ");
                 scanf("%9s", input);
-                if(input != NULL) searchStudentId(&studentInfoPtr, input);
+                if(input != NULL) {
+                    displayStudentInfo(NULL, FLAG_DISP, searchStudentId(&studentInfoPtr, input));                  
+                }
                 break;               
             }
             
@@ -283,29 +288,44 @@ StudentInfoPtr searchStudentName(StudentInfoPtr *head, const char *studentLastNa
     displayStudentInfo: displays each student information in a linked list
     input: the beginning of the linked list (head)
 */
-void displayStudentInfo(StudentInfoPtr *head) {
+void displayStudentInfo(StudentInfoPtr *head, int FLAG, StudentInfoPtr studentInfoPtr) {
     
-    StudentInfoPtr currentStudentInfoPtr = *head;
+    StudentInfoPtr currentStudentInfoPtr;// = *head;
+    
+    switch(FLAG) {
+        
+        case(FLAG_DISP_ALL): {
+            currentStudentInfoPtr = *head;
+        }
+        break;
+        
+        case(FLAG_DISP): {
+            StudentInfo studentInfoCopy = *studentInfoPtr;
+            currentStudentInfoPtr = &studentInfoCopy;
+            currentStudentInfoPtr->next = NULL;
+        }
+        break;
+    }
     
     if(currentStudentInfoPtr == NULL) puts("List is empty");
     
     int count = 1;
-    
-    //Prints each student info
-    while (currentStudentInfoPtr != NULL) {
-        puts("");
-        printf("%s %d\n", "Student: ", count++);
-        printf("%s\n", currentStudentInfoPtr->studentId);   
-        printf("%s\n", currentStudentInfoPtr->firstName);   
-        printf("%s\n", currentStudentInfoPtr->lastName);    
-        printf("%d\n", currentStudentInfoPtr->numOfAttentingCourses);    
+            
+            //Prints each student info
+            while (currentStudentInfoPtr != NULL) {
+                puts("");
+                printf("%s %d\n", "Student: ", count++);
+                printf("%s\n", currentStudentInfoPtr->studentId);   
+                printf("%s\n", currentStudentInfoPtr->firstName);   
+                printf("%s\n", currentStudentInfoPtr->lastName);    
+                printf("%d\n", currentStudentInfoPtr->numOfAttentingCourses);    
 
-        for (int i = 0; i < currentStudentInfoPtr->numOfAttentingCourses; i++) {
-            printf("%s %d\n", currentStudentInfoPtr->courseInfoArr[i].courseName, currentStudentInfoPtr->courseInfoArr[i].courseId);
-        }
-        
-        currentStudentInfoPtr = (StudentInfoPtr) currentStudentInfoPtr->next;
-    }
+                for (int i = 0; i < currentStudentInfoPtr->numOfAttentingCourses; i++) {
+                    printf("%s %d\n", currentStudentInfoPtr->courseInfoArr[i].courseName, currentStudentInfoPtr->courseInfoArr[i].courseId);
+                }
+                
+                currentStudentInfoPtr = (StudentInfoPtr) currentStudentInfoPtr->next;
+            }
 }
 
 /*
