@@ -57,25 +57,24 @@ StudentInfoPtr promptForStudentInfo();
 int menu();
 
 //TODO: validate saving data, prompt before exit
-//TODO: fix seg. fault search non exist val
 
 int main(void){
     
     char *fileName = "studentList.txt";
     StudentInfoPtr studentInfoPtr = NULL;   //Head of list (init no nodes)
 
-    loadStudentInfo (fileName, &studentInfoPtr);
+    loadStudentInfo(fileName, &studentInfoPtr);
             
     int choice;
     
     while((choice = menu()) != EXIT) {
         switch(choice) {
-            case ADD:{
+            case ADD: {
                 addStudent (&studentInfoPtr, promptForStudentInfo());
                 break;
             }
             
-            case DELETE:{
+            case DELETE: {
                 char input[STUDENT_ID_LEN + 1];
                 printf("%s", "Please enter student id to delete: ");
                 scanf("%9s", input);
@@ -83,22 +82,48 @@ int main(void){
                 break;
             }          
             
-            case DISPLAY:{
+            case DISPLAY: {
                 displayStudentInfo(&studentInfoPtr, FLAG_DISP_ALL, NULL);
                 break;          
             }
             
-            case SEARCH:{
-                char input[STUDENT_ID_LEN + 1];
-                printf("%s", "Please enter student id to search: ");
-                scanf("%9s", input);
-                if(input != NULL) {
-                    displayStudentInfo(NULL, FLAG_DISP, searchStudentId(&studentInfoPtr, input));                  
+            case SEARCH: {
+                char input[LAST_NAME_LEN + 1];
+                printf("%s", "Please enter student id or last name to search: ");
+                scanf("%s", input);
+                
+                char *strLeftovers = NULL;
+                long ret;
+                ret = strtol(input, &strLeftovers, 10);
+                
+                printf("--> %ld %s\n", ret, strLeftovers);
+                
+                if(ret > 0 && strlen(strLeftovers) != 0) {
+                    puts("INVALID STUDENT INFORMATION!");
+                }
+                else if(ret > 0 && strlen(strLeftovers) == 0) {
+                
+                    if(input != NULL && strlen(input) == STUDENT_ID_LEN) {
+                        StudentInfoPtr ptr = searchStudentId(&studentInfoPtr, input);
+                        if(ptr != NULL) displayStudentInfo(NULL, FLAG_DISP, ptr);
+                        else puts("NO STUDENT INFORMATION!!");                        
+                    }
+                    else puts("INVALID STUDENT INFORMATION!!");
+                }
+                else if(ret == 0 && strlen(strLeftovers) != 0){
+                
+                    if(input != NULL && strlen(input) <= LAST_NAME_LEN) {
+                        formatName(input);
+                        StudentInfoPtr ptr = searchStudentName(&studentInfoPtr, input);
+                        if(ptr != NULL) displayStudentInfo(NULL, FLAG_DISP, ptr);    
+                        else puts("NO STUDENT INFORMATION!!!");                          
+                    }
+                    else puts("INVALID STUDENT INFORMATION!!!");
                 }
                 break;               
             }
             
-            case SAVE:{
+            case SAVE: {
                 saveStudentInfo(&studentInfoPtr);
                 break;               
             }
@@ -280,7 +305,7 @@ StudentInfoPtr searchStudentName(StudentInfoPtr *head, const char *studentLastNa
         }
         currentStudentInfoPtr = (StudentInfoPtr) currentStudentInfoPtr->next;
     }  
-    
+        
     return NULL;
 }
 
@@ -290,7 +315,7 @@ StudentInfoPtr searchStudentName(StudentInfoPtr *head, const char *studentLastNa
 */
 void displayStudentInfo(StudentInfoPtr *head, int FLAG, StudentInfoPtr studentInfoPtr) {
     
-    StudentInfoPtr currentStudentInfoPtr;// = *head;
+    StudentInfoPtr currentStudentInfoPtr = NULL;
     
     switch(FLAG) {
         
@@ -300,14 +325,16 @@ void displayStudentInfo(StudentInfoPtr *head, int FLAG, StudentInfoPtr studentIn
         break;
         
         case(FLAG_DISP): {
-            StudentInfo studentInfoCopy = *studentInfoPtr;
-            currentStudentInfoPtr = &studentInfoCopy;
-            currentStudentInfoPtr->next = NULL;
+            if(studentInfoPtr != NULL) {
+                StudentInfo studentInfoCopy = *studentInfoPtr;
+                currentStudentInfoPtr = &studentInfoCopy;
+                currentStudentInfoPtr->next = NULL;
+            }
         }
         break;
     }
     
-    if(currentStudentInfoPtr == NULL) puts("List is empty");
+    if(currentStudentInfoPtr == NULL) puts("No data!");
     
     int count = 1;
             
@@ -406,9 +433,7 @@ void loadStudentInfo(const char *fileName, StudentInfoPtr *startStudentInfoPtr) 
                 fscanf(filePtr, "%29s %d", newStudentInfoPtr->courseInfoArr[i].courseName, &(newStudentInfoPtr->courseInfoArr[i]).courseId);
                 convertToUppercase(newStudentInfoPtr->courseInfoArr[i].courseName);
             }
-            
-            printf("%s\n", newStudentInfoPtr->firstName);
-            
+                        
             newStudentInfoPtr->next = NULL;
             
             if(searchStudentId(startStudentInfoPtr, newStudentInfoPtr->studentId) == NULL) {               
