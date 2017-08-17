@@ -92,33 +92,34 @@ int main(void){
                 printf("%s", "Please enter student id or last name to search: ");
                 scanf("%s", input);
                 
-                char *strLeftovers = NULL;
-                long ret;
-                ret = strtol(input, &strLeftovers, 10);
-                
-                printf("--> %ld %s\n", ret, strLeftovers);
-                
-                if(ret > 0 && strlen(strLeftovers) != 0) {
-                    puts("INVALID STUDENT INFORMATION!");
-                }
-                else if(ret > 0 && strlen(strLeftovers) == 0) {
-                
-                    if(input != NULL && strlen(input) == STUDENT_ID_LEN) {
-                        StudentInfoPtr ptr = searchStudentId(&studentInfoPtr, input);
-                        if(ptr != NULL) displayStudentInfo(NULL, FLAG_DISP, ptr);
-                        else puts("NO STUDENT INFORMATION!!");                        
+                //Validates the input from the user for either id or name
+                {
+                    char *strLeftovers = NULL;
+                    long ret;
+                    ret = strtol(input, &strLeftovers, 10);
+                                    
+                    if(ret > 0 && strlen(strLeftovers) != 0) {
+                        puts("INVALID STUDENT INFORMATION!");
                     }
-                    else puts("INVALID STUDENT INFORMATION!!");
-                }
-                else if(ret == 0 && strlen(strLeftovers) != 0){
-                
-                    if(input != NULL && strlen(input) <= LAST_NAME_LEN) {
-                        formatName(input);
-                        StudentInfoPtr ptr = searchStudentName(&studentInfoPtr, input);
-                        if(ptr != NULL) displayStudentInfo(NULL, FLAG_DISP, ptr);    
-                        else puts("NO STUDENT INFORMATION!!!");                          
+                    else if(ret > 0 && strlen(strLeftovers) == 0) {
+                    
+                        if(input != NULL && strlen(input) == STUDENT_ID_LEN) {
+                            StudentInfoPtr ptr = searchStudentId(&studentInfoPtr, input);
+                            if(ptr != NULL) displayStudentInfo(NULL, FLAG_DISP, ptr);
+                            else puts("NO STUDENT INFORMATION!!");                        
+                        }
+                        else puts("INVALID STUDENT INFORMATION!!");
                     }
-                    else puts("INVALID STUDENT INFORMATION!!!");
+                    else if(ret == 0 && strlen(strLeftovers) != 0){
+                    
+                        if(input != NULL && strlen(input) <= LAST_NAME_LEN) {
+                            formatName(input);
+                            StudentInfoPtr ptr = searchStudentName(&studentInfoPtr, input);
+                            if(ptr != NULL) displayStudentInfo(NULL, FLAG_DISP, ptr);    
+                            else puts("NO STUDENT INFORMATION!!!");                          
+                        }
+                        else puts("INVALID STUDENT INFORMATION!!!");
+                    }
                 }
                 break;               
             }
@@ -365,7 +366,7 @@ void saveStudentInfo(StudentInfoPtr *head) {
     FILE *filePtr = NULL;
     
     if((filePtr = fopen(fileName, "w")) == NULL) {
-        puts("ERR IN WRITING TO FILE | FILE COULD NOT BE OPENED");
+        puts("ERR IN SAVING TO FILE | FILE COULD NOT BE OPENED");
     }
     else {
         
@@ -452,6 +453,16 @@ void loadStudentInfo(const char *fileName, StudentInfoPtr *startStudentInfoPtr) 
 */
 void terminate(StudentInfoPtr *head) {
     
+    printf("%s", "Save students to file before exiting (Y/N) ? ");
+    
+    char decision;
+    scanf("%c", &decision);
+    
+    if(decision == 'y' || decision == 'Y') {
+        saveStudentInfo(head);
+        puts("Students saved!");
+    }
+    
     StudentInfoPtr currentStudentInfoPtr = *head;
     StudentInfoPtr hold = NULL;
 
@@ -463,6 +474,8 @@ void terminate(StudentInfoPtr *head) {
     }
     
     *head = NULL;
+    
+    puts("Exiting...");
 }
 
 /*
