@@ -2,7 +2,9 @@
     Author: Beesham Sarendranauth, 104854956
     Date: 2017/08/22
     Description: This program maintains a file of students and their course info 
-    using concepts of structures, pointers, memory allocation, and file manipulatino.
+    using concepts of structures, pointers, memory allocation, and file manipulation.
+    *Note: the output file can be read with a sophisticated text editor such as Notepad++ 
+    for better human readability
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -56,7 +58,6 @@ void convertToUppercase(char *string);
 StudentInfoPtr promptForStudentInfo();
 int menu();
 
-//TODO: validate saving data, prompt before exit
 
 int main(void){
     
